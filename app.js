@@ -4,7 +4,7 @@ const app = express();
 const PORT = process.env.PORT || 3004;
 
 // Configure CORS to allow all origins. Quitar para produccion
-app.use(cors()); 
+//app.use(cors()); 
 
 app.use(express.json());
 
