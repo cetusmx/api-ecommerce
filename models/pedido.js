@@ -1,0 +1,45 @@
+'use strict';
+const {
+  Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class Pedido extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
+      // Un pedido tiene muchos detalles de pedido
+      Pedido.hasMany(models.PedidoDetalle, {
+        foreignKey: 'pedidoId',
+        as: 'detalles',
+        onDelete: 'CASCADE' 
+      });
+    }
+  }
+  Pedido.init({
+    folio: {
+      type: DataTypes.STRING,
+      primaryKey: true,
+      allowNull: false, 
+    },
+    num_productos: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    estatus: {
+      type: DataTypes.STRING,
+      allowNull: true, 
+    },
+    total:  {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: false, 
+    },
+  }, {
+    sequelize,
+    modelName: 'Pedido',
+  });
+  return Pedido;
+};
