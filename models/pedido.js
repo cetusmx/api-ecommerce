@@ -12,28 +12,54 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       // Un pedido tiene muchos detalles de pedido
-      Pedido.hasMany(models.PedidoDetalle, {
+      /* Pedido.hasMany(models.PedidoDetalle, {
         foreignKey: 'pedidoId',
         as: 'detalles',
         onDelete: 'CASCADE' 
-      });
+      }); */
     }
   }
   Pedido.init({
+    id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
     folio: {
       type: DataTypes.STRING,
       primaryKey: true,
       allowNull: false, 
     },
-    num_productos: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
-    estatus: {
+    email:  {
       type: DataTypes.STRING,
       allowNull: true, 
     },
-    total:  {
+    enviar_a: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    clave: {
+      type: DataTypes.STRING,
+      primaryKey: true,
+      allowNull: false,
+    },
+    descripcion: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    cantidad:  {
+      type: DataTypes.STRING,
+      allowNull: false, 
+    },
+    cant_por_empaque:  {
+      type: DataTypes.STRING,
+      allowNull: false, 
+    },
+    estatus:  {
+      type: DataTypes.STRING,
+      allowNull: false, 
+    },
+    total_partida:  {
       type: DataTypes.DECIMAL(10,2),
       allowNull: false, 
     },
