@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Categoria extends Model {
+  class ProductoSugerido extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -20,8 +20,13 @@ module.exports = (sequelize, DataTypes) => {
       }); */
     }
   }
-  Categoria.init({
-    categoria:  {
+  ProductoSugerido.init({
+    id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+    clave:  {
       type: DataTypes.STRING,
       primaryKey: true,
       allowNull: true, 
@@ -30,18 +35,18 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false, 
     },
-    cuenta_contable:  {
-      type: DataTypes.STRING,
+    descuento:  {
+      type: DataTypes.INTEGER,
       allowNull: true, 
     },
-    categoria_padre:  {
+    estatus:  {
       type: DataTypes.STRING,
       allowNull: true, 
     },
   }, {
     sequelize,
-    modelName: 'Categoria',
-    tableName: 'Categorias'
+    modelName: 'ProductoSugerido',
+    tableName: 'ProductosSugeridos'
   });
-  return Categoria;
+  return ProductoSugerido;
 };

@@ -28,13 +28,25 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false, 
     },
+    colocado_en: {
+      type: DataTypes.STRING,
+      allowNull: false, 
+    },
     unidad_entrada: {
+      type: DataTypes.STRING,
+      allowNull: true, 
+    },
+    unidad: {
       type: DataTypes.STRING,
       allowNull: false, 
     },
     unidad_salida: {
       type: DataTypes.STRING,
-      allowNull: false, 
+      allowNull: true, 
+    },
+    cantidad_minima: {
+      type: DataTypes.STRING,
+      allowNull: true, 
     },
     tiempo_surtido: {
       type: DataTypes.STRING,
@@ -60,20 +72,28 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true, 
     },
+    cant_por_empaque: {
+      type: DataTypes.STRING,
+      allowNull: true, 
+    },
+    categoria: {
+      type: DataTypes.STRING,
+      allowNull: true, 
+    },
     precio: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: true, 
     },
     moneda: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false, 
     },
     costeo: {
       type: DataTypes.STRING,
-      allowNull: false, 
+      allowNull: true, 
     },
     impuestos: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.INTEGER,
       allowNull: false, 
     },
     ieps: {
@@ -81,6 +101,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true, 
     },
     observaciones: {
+      type: DataTypes.TEXT,
+      allowNull: true, 
+    },
+    descripcion_larga: {
+      type: DataTypes.TEXT,
+      allowNull: true, 
+    },
+    acerca_de_producto: {
       type: DataTypes.TEXT,
       allowNull: true, 
     },
@@ -105,19 +133,19 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true, 
     },
     diam_int: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.STRING,
       allowNull: true, 
     },
     diam_ext: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.STRING,
       allowNull: true, 
     },
     altura: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.STRING,
       allowNull: true, 
     },
     seccion: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.STRING,
       allowNull: true, 
     },
     material: {
@@ -133,6 +161,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true, 
     },
     clave_fab: {
+      type: DataTypes.STRING,
+      allowNull: true, 
+    },
+    marca: {
       type: DataTypes.STRING,
       allowNull: true, 
     },

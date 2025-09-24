@@ -14,36 +14,30 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   PedidoDetalle.init({
-    cantidad: {
+    id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+    folio: {
       type: DataTypes.STRING,
+      primaryKey: true,
       allowNull: false, 
     },
-    clave:  {
-      type: DataTypes.STRING,
-      allowNull: false, 
-    },
-    origen: {
+    email:  {
       type: DataTypes.STRING,
       allowNull: true, 
     },
-    descripcion: {
+    enviado_a: {
       type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    tipo: {
-      type: DataTypes.STRING,
-      allowNull: false, 
-    },
-    linea: {
-      type: DataTypes.STRING,
-      allowNull: false, 
-    },
-    precio: {
-      type: DataTypes.DECIMAL(10,2),
-      allowNull: true, 
+      allowNull: true,
     },
     total:  {
       type: DataTypes.DECIMAL(10,2),
+      allowNull: true, 
+    },
+    facturado:  {
+      type: DataTypes.STRING,
       allowNull: true, 
     },
   }, {

@@ -11,20 +11,26 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // Un pedido tiene muchos detalles de pedido
-      Cliente.hasMany(models.Pedido, {
-        foreignKey: 'clienteId',
+      /* Cliente.hasMany(models.Pedido, {
+        foreignKey: 'clienteEmail',
         as: 'pedidos',
-        onDelete: 'CASCADE' // Esta línea es clave para el borrado en cascada
-      });
-      // Un pedido tiene muchos detalles de pedido
-     /*  Cliente.hasMany(models.DomicilioCliente, {
-        foreignKey: 'clienteId',
-        as: 'domicilios',
-        onDelete: 'CASCADE' // Esta línea es clave para el borrado en cascada
+        onDelete: 'CASCADE', // Esta línea es clave para el borrado en cascada
+        sourceKey: 'email',
       }); */
+      // Un cliente tiene muchos domicilios
+      Cliente.hasMany(models.DomicilioCliente, {
+        foreignKey: 'clienteEmail',
+        as: 'domicilios',
+        sourceKey: 'email',
+      });
     }
   }
   Cliente.init({
+    id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
     nombre:  {
       type: DataTypes.STRING,
       allowNull: false, 
@@ -36,6 +42,7 @@ module.exports = (sequelize, DataTypes) => {
     email:  {
       type: DataTypes.STRING,
       allowNull: false, 
+      primaryKey: true,
     },
   }, {
     sequelize,
