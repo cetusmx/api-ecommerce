@@ -1,7 +1,200 @@
 const express = require('express');
 const router = express.Router();
+const nodemailer = require('nodemailer');
+const { renderToStaticMarkup } = require('react-dom/server');
+const PedidoEmail = require('../templates/PedidoEmail');
+const React = require('react');
 const db = require('../models');
 const Pedido = db.Pedido;
+const Cliente = db.Cliente;
+
+// Configuración del transporter (DEBES USAR TUS CREDENCIALES REALES AQUÍ)
+const transporter = nodemailer.createTransport({
+    host: "mail.sealmarket.mx",
+    port: 465,
+    secure: true, // Usar 'true' si el puerto es 465
+    auth: {
+        user: "auto-confirm@sealmarket.mx", // Tu correo de envío
+        pass: "Trof#4102O" // Tu contraseña o App Password
+    }
+});
+
+// 🚨 FUNCIÓN DE SERVICIO: Obtiene el nombre completo del titular
+async function obtenerNombreTitular(email) {
+    try {
+        const cliente = await Cliente.findOne({
+            where: { email: email },
+            attributes: ['nombre', 'apellido']
+        });
+        
+        if (cliente) {
+            // Combinamos nombre y apellido para el nombre completo
+            const nombreCompleto = `${cliente.nombre} ${cliente.apellido}`.trim();
+            
+            // 🚨 CLAVE: Dividimos el nombre por el espacio y tomamos la primera palabra
+            const primerNombre = cliente.nombre.split(' ')[0]; 
+
+            return {
+                completo: nombreCompleto,
+                saludo: primerNombre
+            };
+        }
+        return {
+            completo: 'Titular no encontrado',
+            saludo: 'Cliente'
+        };
+    } catch (error) {
+        console.error('Error al buscar el nombre del titular:', error);
+        return {
+            completo: 'Error de búsqueda',
+            saludo: 'Cliente'
+        };
+    }
+}
+
+// Endpoint para enviar la confirmación de pedido
+router.post('/:folio/enviar-confirmacion', async (req, res) => {
+    const { folio } = req.params;
+    const itemsArray = req.body; 
+
+    try {
+        // 1. Validación del Body
+        if (!Array.isArray(itemsArray) || itemsArray.length === 0) {
+            return res.status(400).json({ error: 'El cuerpo de la solicitud debe ser un arreglo no vacío de partidas de pedido.' });
+        }
+
+        const primeraPartida = itemsArray[0];
+        
+        if (!primeraPartida.email || !primeraPartida.enviar_a || !primeraPartida.total_pedido) {
+            return res.status(400).json({ error: 'Faltan campos de cabecera críticos (email, enviar_a, o total_pedido) en el cuerpo de la solicitud.' });
+        }
+
+        // 🚨 CLAVE: Llamada a la función para obtener el nombre del titular
+        const nombreTitular = await obtenerNombreTitular(primeraPartida.email);
+
+        // 2. Reestructurar las partidas en el objeto 'pedido' para la plantilla
+        const pedidoData = {
+            folio: primeraPartida.folio,
+            emailCliente: primeraPartida.email, 
+            enviar_a: primeraPartida.enviar_a,
+            estatus: primeraPartida.estatus || 'Pendiente de envío',
+            
+            // 🚨 NUEVO CAMPO AGREGADO
+            nombreTitular: nombreTitular, 
+            
+            // Campos adicionales de cabecera
+            createdAt: primeraPartida.createdAt || new Date().toISOString(),
+            metodo_pago: primeraPartida.metodo_pago || 'N/A',
+            costo_envio: primeraPartida.costo_envio || 0,
+            
+            total: parseFloat(primeraPartida.total_pedido).toFixed(2),
+            
+            items: itemsArray.map(item => ({
+                clave: item.clave,
+                descripcion: item.descripcion,
+                cantidad: item.cantidad,
+                total_partida: item.total_partida,
+                linea: item.linea || 'SIN_LINEA',
+                fecha_entrega: item.fecha_entrega || 'N/A' 
+            }))
+        };
+        
+        // ... (Renderizado, Nodemailer y respuesta) ...
+        
+        const html = renderToStaticMarkup(React.createElement(PedidoEmail, { pedido: pedidoData }));
+
+        const mailOptions = {
+            from: '"Seal Market" <auto-confirm@sealmarket.mx>',
+            to: pedidoData.emailCliente,
+            subject: `Confirmación de Pedido #${pedidoData.folio}`,
+            html: html,
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        
+        console.log('Mensaje enviado: %s', info.messageId);
+
+        res.status(200).json({ 
+            message: 'Correo de confirmación enviado con éxito.', 
+            messageId: info.messageId 
+        });
+
+    } catch (error) {
+        console.error('Error al enviar el correo de confirmación:', error);
+        res.status(500).json({ error: 'Error interno del servidor al enviar el correo.' });
+    }
+});
+
+/* // Endpoint para enviar la confirmación de pedido
+router.post('/:folio/enviar-confirmacion', async (req, res) => {
+    const { folio } = req.params;
+    // 🚨 CLAVE: Extraer la fecha_entrega del cuerpo de la solicitud (req.body)
+    const { fecha_entrega } = req.body;
+
+    try {
+        if (!fecha_entrega) {
+            return res.status(400).json({ error: 'Falta la fecha de entrega en el cuerpo de la solicitud (body).' });
+        }
+
+        // 1. Obtener todas las partidas del pedido de la base de datos
+        const partidas = await Pedido.findAll({
+            where: { folio: folio },
+            order: [['id', 'ASC']]
+        });
+
+        if (!partidas || partidas.length === 0) {
+            return res.status(404).json({ error: `Pedido con folio ${folio} no encontrado.` });
+        }
+
+        // 2. Reestructurar las partidas en el objeto 'pedido'
+        const primeraPartida = partidas[0];
+
+        // Calcular el total sumando el total_partida de todas las filas
+        const total = partidas.reduce((sum, item) => sum + parseFloat(item.total_partida), 0);
+
+        // Mapear los datos al formato que PedidoEmail.jsx requiere
+        const pedidoData = {
+            folio: primeraPartida.folio,
+            emailCliente: primeraPartida.email,
+            enviar_a: primeraPartida.enviar_a,
+            estatus: primeraPartida.estatus,
+            createdAt: primeraPartida.createdAt || new Date().toISOString(),
+            fecha_entrega: fecha_entrega,
+            total: total.toFixed(2),
+            items: partidas.map(item => ({
+                clave: item.clave,
+                descripcion: item.descripcion,
+                cantidad: item.cantidad,
+                total_partida: item.total_partida,
+                linea: item.linea || 'SIN_LINEA'
+            }))
+        };
+
+        // 3. Renderizar el componente React a HTML estático
+        const html = renderToStaticMarkup(React.createElement(PedidoEmail, { pedido: pedidoData }));
+
+        // 4. Configurar y enviar el correo (código de Nodemailer...)
+        const mailOptions = {
+            from: '"Seal Market" <auto-confirm@sealmarket.mx>',
+            to: pedidoData.emailCliente,
+            subject: `Confirmación de Pedido #${pedidoData.folio}`,
+            html: html,
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+
+        console.log('Mensaje enviado: %s', info.messageId);
+
+        res.status(200).json({
+            message: 'Correo de confirmación enviado con éxito.',
+            messageId: info.messageId
+        });
+
+    } catch (error) {
+        console.error('Error al enviar el correo de confirmación:', error);
+        res.status(500).json({ error: 'Error interno del servidor al enviar el correo.' });
+    }
+}); */
 
 // Endpoint para crear una nueva pedido
 router.post('/', async (req, res) => {
@@ -37,7 +230,7 @@ router.get('/cliente/:email', async (req, res) => {
             }
         });
 
-        if (!pedido || pedido.length ===0) {
+        if (!pedido || pedido.length === 0) {
             //console.log('Order not found for folio:', folio); // Add this line
             return res.status(404).json({ error: 'Pedidos no encontrados' });
         }
@@ -61,7 +254,7 @@ router.get('/:folio', async (req, res) => {
             }
         });
 
-        if (!pedido || pedido.length ===0) {
+        if (!pedido || pedido.length === 0) {
             console.log('Order not found for folio:', folio); // Add this line
             return res.status(404).json({ error: 'Pedido no encontrado' });
         }
