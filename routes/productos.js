@@ -134,13 +134,122 @@ router.delete('/all', async (req, res) => {
 });
 
 // Endpoint para obtener todos los productos
-router.get('/', async (req, res) => {
+/* router.get('/', async (req, res) => {
     try {
         const productos = await Producto.findAll();
         res.status(200).json(productos);
     } catch (error) {
         console.error('Error al obtener todos los productos:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
+    }
+}); */
+
+// /routes/productos.js
+
+// Endpoint para obtener todos los productos (ORQUESTADOR - VERSIÓN ORIGINAL CON IVA Y REDONDEO)
+router.get('/', async (req, res) => {
+    try {
+        // 1. Obtener la lista base de productos de la BD local ('y')
+        // *EXCLUIMOS*: 'precio', 'existencia', 'ultima_compra', y 'ultimo_costo'
+        const productosBase = await Producto.findAll({
+            attributes: { exclude: ['precio', 'existencia', 'ultima_compra', 'ultimo_costo'] }
+        });
+
+        // 2. Realizar las TRES llamadas concurrentes al servidor 'z'
+        const [preciosResponse, existenciasResponse, inventarioResponse] = await Promise.all([
+            axios.get(`${INVENTARIO_API_URL}/precios`),
+            axios.get(`${INVENTARIO_API_URL}/existencias`),
+            axios.get(`${INVENTARIO_API_URL}/inventario`) 
+        ]);
+
+        // 3. Crear Mapas para una búsqueda eficiente O(1)
+        const preciosExternos = preciosResponse.data;
+        const existenciasExternas = existenciasResponse.data;
+        const inventarioExterno = inventarioResponse.data; 
+
+        // Mapa 1: Precios (CVE_ART -> PRECIO)
+        const preciosMap = new Map();
+        preciosExternos.forEach(p => {
+            preciosMap.set(String(p.CVE_ART).trim().toUpperCase(), p.PRECIO);
+        });
+
+        // Mapa 2: Existencias (CVE_ART -> EXISTENCIA SUMADA)
+        const existenciasMap = new Map();
+        existenciasExternas.forEach(e => {
+            const claveNormalizada = String(e.CVE_ART).trim().toUpperCase();
+            const existenciaActual = existenciasMap.get(claveNormalizada) || 0;
+            existenciasMap.set(claveNormalizada, existenciaActual + parseFloat(e.EXIST || 0));
+        });
+        
+        // Mapa 3: Inventario Base (CVE_ART -> {FCH_ULTCOM, ULT_COSTO})
+        const inventarioMap = new Map();
+        inventarioExterno.forEach(i => {
+            const claveNormalizada = String(i.CVE_ART).trim().toUpperCase();
+            inventarioMap.set(claveNormalizada, {
+                FCH_ULTCOM: i.FCH_ULTCOM,
+                ULT_COSTO: i.ULT_COSTO
+            });
+        });
+
+
+        // 4. Fusionar los datos, aplicar IVA y construir la respuesta final
+        const productosFinales = productosBase.map(producto => {
+            const productoObj = producto.get({ plain: true });
+            const claveNormalizada = String(productoObj.clave).trim().toUpperCase();
+            
+            // Datos Externos
+            const invData = inventarioMap.get(claveNormalizada);
+            
+            // ----------------------------------------------------
+            // 🚨 CAMBIO CLAVE: CÁLCULO DE IVA Y REDONDEO APLICADO
+            // ----------------------------------------------------
+            const precioNeto = preciosMap.has(claveNormalizada)
+                ? parseFloat(preciosMap.get(claveNormalizada))
+                : 0;
+
+            let precioFinalVenta = null;
+
+            if (precioNeto > 0) {
+                // 1. Aplicar 16% de IVA (Precio Bruto)
+                const precioBruto = precioNeto * 1.16;
+
+                // 2. Aplicar reglas de redondeo
+                if (precioBruto < 5.00) {
+                    // Si es menor a $5.00, se mantiene a dos decimales
+                    precioFinalVenta = parseFloat(precioBruto.toFixed(2));
+                } else {
+                    // Si es igual o mayor a $5.00, se redondea al entero superior
+                    precioFinalVenta = Math.ceil(precioBruto);
+                }
+            }
+            
+            // Asignar el precio final de venta
+            productoObj.precio = precioFinalVenta; 
+            // ----------------------------------------------------
+            
+            // Integración de Existencia (original)
+            productoObj.existencia = existenciasMap.has(claveNormalizada)
+                ? parseFloat(existenciasMap.get(claveNormalizada))
+                : 0.00;
+
+            // Integración de los nuevos campos de Inventario Base (original)
+            productoObj.ultimo_costo = invData && invData.ULT_COSTO
+                ? parseFloat(invData.ULT_COSTO)
+                : null;
+            productoObj.ultima_compra = invData && invData.FCH_ULTCOM
+                ? invData.FCH_ULTCOM
+                : null; 
+
+            return productoObj;
+        });
+
+        res.status(200).json(productosFinales);
+    } catch (error) {
+        console.error('Error al obtener productos y combinarlos con datos externos:', error);
+        res.status(500).json({ 
+            error: 'Error interno del servidor al obtener o combinar datos.',
+            detalle: error.message
+        });
     }
 });
 
