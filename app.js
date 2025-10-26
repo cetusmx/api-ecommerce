@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require('morgan');
 const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3004;
@@ -12,6 +13,7 @@ app.use(cors({
 // Aumenta el límite de tamaño del payload a 50mb (o el tamaño que necesites)
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(morgan());
 
 //app.use(express.json());
 

@@ -41,7 +41,7 @@ router.get('/cliente/:email', async (req, res) => {
             //console.log('Order not found for folio:', folio); // Add this line
             return res.status(404).json({ error: 'Pedidos no encontrados' });
         }
-        console.log('Order found:', pedido); // Add this line
+        //console.log('Order found:', pedido); // Add this line
         res.status(200).json(pedido);
     } catch (error) {
         console.error('Error al obtener el pedido:', error);
@@ -65,7 +65,7 @@ router.get('/:folio', async (req, res) => {
             console.log('Order not found for folio:', folio); // Add this line
             return res.status(404).json({ error: 'Pedido no encontrado' });
         }
-        console.log('Order found:', pedido); // Add this line
+        //console.log('Order found:', pedido); // Add this line
         res.status(200).json(pedido);
     } catch (error) {
         console.error('Error al obtener el pedido:', error);
