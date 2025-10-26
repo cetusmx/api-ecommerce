@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require('../models');
 const Producto = db.Producto;
 const { Op } = require('sequelize');
+const axios = require('axios');
 
 // Endpoint para crear un nuevo producto
 router.post('/', async (req, res) => {
@@ -157,9 +158,9 @@ router.get('/', async (req, res) => {
 
         // 2. Realizar las TRES llamadas concurrentes al servidor 'z'
         const [preciosResponse, existenciasResponse, inventarioResponse] = await Promise.all([
-            axios.get(`${INVENTARIO_API_URL}/precios`),
-            axios.get(`${INVENTARIO_API_URL}/existencias`),
-            axios.get(`${INVENTARIO_API_URL}/inventario`) 
+            axios.get(`${process.env.INVENTARIO_API_URL}/precios`),
+            axios.get(`${process.env.INVENTARIO_API_URL}/existencias`),
+            axios.get(`${process.env.INVENTARIO_API_URL}/inventario`) 
         ]);
 
         // 3. Crear Mapas para una búsqueda eficiente O(1)
