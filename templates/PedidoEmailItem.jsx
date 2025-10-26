@@ -1,4 +1,4 @@
-import React from 'react';
+const React = require('react');
 
 const PedidoEmailItem = ({ item }) => {
   // Asumimos que el backend proveerá la URL completa de la imagen
@@ -103,4 +103,4 @@ const PedidoEmailItem = ({ item }) => {
   );
 };
 
-export default PedidoEmailItem;
+module.exports = PedidoEmailItem;
