@@ -1,3 +1,11 @@
+require('@babel/register')({
+    // 1. Asegúrate de que los 'presets' estén aquí O en tu .babelrc
+    // Si usas .babelrc, esta sección puede estar vacía, pero la dejo para seguridad:
+    // presets: ["@babel/preset-react"], 
+    
+    // 2. 🚨 CLAVE: Le decimos a Node que acepte .jsx en los require/import
+    extensions: ['.js', '.jsx', '.json'] 
+});
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');

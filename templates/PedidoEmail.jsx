@@ -1,5 +1,5 @@
-import React from "react";
-import PedidoEmailItem from "./PedidoEmailItem";
+const React = require('react');
+const PedidoEmailItem = require('./PedidoEmailItem');
 
 const PedidoEmail = ({ pedido }) => {
   const formatDate = (dateString) => {
@@ -226,4 +226,4 @@ const PedidoEmail = ({ pedido }) => {
   );
 };
 
-export default PedidoEmail;
+module.exports = PedidoEmail;
