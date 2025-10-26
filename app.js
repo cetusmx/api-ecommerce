@@ -87,6 +87,10 @@ app.use('/api/pedidos', pedidos);
 const visitasRouter  = require('./routes/visitas');
 app.use('/api/analytics/visit', visitasRouter);
 
+// Importa y usa las rutas de pagos
+const pagosRoutes = require('./routes/pagos'); // Ajusta la ruta si es necesario
+app.use('/api/pagos', pagosRoutes); // Acceso: POST /api/pagos/crear-intento
+
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
