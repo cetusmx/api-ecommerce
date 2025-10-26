@@ -1,12 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const nodemailer = require('nodemailer');
-const { renderToStaticMarkup } = require('react-dom/server');
-const PedidoEmail = require('../templates/PedidoEmail');
-const React = require('react');
 const db = require('../models');
 const Pedido = db.Pedido;
+
+const nodemailer = require('nodemailer');
+const React = require('react');
+const { renderToStaticMarkup } = require('react-dom/server');
+
+const PedidoEmail = require('../templates/PedidoEmail.jsx');
+
 const Cliente = db.Cliente;
+
+
 
 // Configuración del transporter (DEBES USAR TUS CREDENCIALES REALES AQUÍ)
 const transporter = nodemailer.createTransport({
@@ -70,7 +75,7 @@ router.post('/:folio/enviar-confirmacion', async (req, res) => {
         }
 
         // 🚨 CLAVE: Llamada a la función para obtener el nombre del titular
-        const nombreTitular = await obtenerNombreTitular(primeraPartida.email);
+        //const nombreTitular = await obtenerNombreTitular(primeraPartida.email);
 
         // 2. Reestructurar las partidas en el objeto 'pedido' para la plantilla
         const pedidoData = {
@@ -80,7 +85,7 @@ router.post('/:folio/enviar-confirmacion', async (req, res) => {
             estatus: primeraPartida.estatus || 'Pendiente de envío',
             
             // 🚨 NUEVO CAMPO AGREGADO
-            nombreTitular: nombreTitular, 
+            //nombreTitular: nombreTitular, 
             
             // Campos adicionales de cabecera
             createdAt: primeraPartida.createdAt || new Date().toISOString(),
