@@ -99,6 +99,18 @@ app.use('/api/analytics/visit', visitasRouter);
 const pagosRoutes = require('./routes/pagos'); // Ajusta la ruta si es necesario
 app.use('/api/pagos', pagosRoutes); // Acceso: POST /api/pagos/crear-intento
 
+// Importa y usa las rutas de boletines
+const boletinesRoutes = require('./routes/boletines'); // Ajusta la ruta si es necesario
+app.use('/api/boletines', boletinesRoutes); // Acceso: POST /api/boletines/
+
+// Importa y usa las rutas de envios
+const envios = require('./routes/envios');
+app.use('/api/envios', envios);
+
+// Importa y usa la ruta para el envío de correo (NUEVA RUTA)
+const facturacionRoutes = require('./routes/facturacion');
+app.use('/api/facturacion', facturacionRoutes); // Monta la ruta en /api/correo
+
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
