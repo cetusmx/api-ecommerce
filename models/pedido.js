@@ -59,8 +59,24 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false, 
     },
+    metodo_pago:  {
+      type: DataTypes.STRING,
+      allowNull: false, 
+    },
     total_partida:  {
       type: DataTypes.DECIMAL(10,2),
+      allowNull: false, 
+    },
+    total_pedido:  {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: false, 
+    },
+    costo_envio:  {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: false, 
+    },
+    fecha_entrega:  {
+      type: DataTypes.DATE,
       allowNull: false, 
     },
   }, {
