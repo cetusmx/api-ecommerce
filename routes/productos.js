@@ -5,6 +5,65 @@ const Producto = db.Producto;
 const { Op } = require('sequelize');
 const axios = require('axios');
 
+// productos.js (Endpoint POST /api/productos/existencias-masiva)
+
+router.post('/existencias-masiva', async (req, res) => {
+    const claves = req.body.claves; 
+
+    if (!Array.isArray(claves) || claves.length === 0) {
+        return res.status(400).json({ error: 'El cuerpo debe contener un arreglo no vacío de claves de producto en el campo "claves".' });
+    }
+
+    const clavesNormalizadas = claves.map(c => String(c).trim().toUpperCase());
+
+    try {
+        // 1. Llamada al endpoint externo de inventario filtrado (index.js)
+        const existenciasResponse = await axios.post(`${process.env.INVENTARIO_API_URL}/existencias-masiva-filtrada`, {
+             claves: clavesNormalizadas 
+        });
+
+        const existenciasExternas = existenciasResponse.data;
+        
+        // 🚨 CAMBIO CLAVE: Usar un mapa para agrupar las existencias por clave
+        // Mapa: Map<clave, Array< {almacen: N, existencia: X} >>
+        const existenciasMap = new Map();
+        
+        // 2. Procesar y Agrupar por Clave
+        existenciasExternas.forEach(e => {
+            const claveNormalizada = String(e.CVE_ART).trim().toUpperCase();
+            
+            // Crea el objeto de existencia para el almacén actual
+            const detalleExistencia = {
+                almacen: String(e.CVE_ALM),
+                existencia: parseFloat(e.EXIST || 0).toFixed(2)
+            };
+            
+            // Agrupa la existencia por clave
+            if (existenciasMap.has(claveNormalizada)) {
+                existenciasMap.get(claveNormalizada).push(detalleExistencia);
+            } else {
+                existenciasMap.set(claveNormalizada, [detalleExistencia]);
+            }
+        });
+
+        // 3. Formatear la Respuesta Final (asegurando que se devuelvan todas las claves solicitadas)
+        const resultadoFinal = clavesNormalizadas.map(clave => ({
+            clave: clave,
+            // Si la clave existe en el mapa, devuelve el arreglo de almacenes. Si no, devuelve un arreglo vacío.
+            existencias_por_almacen: existenciasMap.get(clave) || [] 
+        }));
+
+        res.status(200).json(resultadoFinal);
+
+    } catch (error) {
+        console.error('Error al obtener existencias masivas filtradas:', error);
+        res.status(500).json({ 
+            error: 'Error interno del servidor al consultar existencias masivas.',
+            detalle: error.message
+        });
+    }
+});
+
 // Endpoint para crear un nuevo producto
 router.post('/', async (req, res) => {
     try {
@@ -188,7 +247,8 @@ router.get('/', async (req, res) => {
             const claveNormalizada = String(i.CVE_ART).trim().toUpperCase();
             inventarioMap.set(claveNormalizada, {
                 FCH_ULTCOM: i.FCH_ULTCOM,
-                ULT_COSTO: i.ULT_COSTO
+                ULT_COSTO: i.ULT_COSTO,
+                UNI_MED: i.UNI_MED,
             });
         });
 
