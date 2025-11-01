@@ -31,9 +31,7 @@ const renderSurtidoEmail = (envioData) => {
 const ALMACEN_EMAILS = {
     '1': 'contacto@sealmarket.mx',
     '6': 'orodriguez@sealmarket.mx',
-    // Agrega más almacenes según los necesites
 };
-
 
 // =======================================================
 // RUTA 5: POST /api/envios/surtir
