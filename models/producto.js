@@ -80,10 +80,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true, 
     },
-    precio: {
-      type: DataTypes.DECIMAL(10,2),
-      allowNull: true, 
-    },
     moneda: {
       type: DataTypes.STRING,
       allowNull: false, 
@@ -120,10 +116,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false, 
     },
-    existencia: {
-      type: DataTypes.DECIMAL(10,2),
-      allowNull: false, 
-    },
     ultimo_costo: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: true, 
@@ -149,6 +141,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true, 
     },
     material: {
+      type: DataTypes.STRING,
+      allowNull: true, 
+    },
+    dureza: {
       type: DataTypes.STRING,
       allowNull: true, 
     },

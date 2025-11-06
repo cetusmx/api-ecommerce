@@ -336,7 +336,7 @@ router.get('/', async (req, res) => {
 // ... (definición de INVENTARIO_API_URL y axios) ...
 
 // Endpoint para obtener un producto por su clave (AHORA CON UNA SOLA LLAMADA EXTERNA)
-router.get('/:clave', async (req, res) => {
+/* router.get('/:clave', async (req, res) => {
     const { clave } = req.params;
     const claveNormalizada = String(clave).trim().toUpperCase();
     console.log("Dentro /:clave");
@@ -385,6 +385,89 @@ router.get('/:clave', async (req, res) => {
     } catch (error) {
         // Manejo de errores: Si la llamada externa falla, podemos devolver el producto base
         // sin la información actualizada, o devolver el error 500. Elegimos 500 para ser estrictos.
+        console.error('Error al obtener el producto y combinar datos externos:', error.message);
+        res.status(500).json({ 
+            error: 'Error al procesar la solicitud o al conectar con el servicio de inventario en tiempo real.',
+            detalle: error.message
+        });
+    }
+});
+ */
+// productos.js (Servidor 'X' - Endpoint /:clave - MODIFICADO)
+// ... (código anterior)
+
+// Endpoint para obtener un producto por su clave (AHORA CON UNA SOLA LLAMADA EXTERNA Y CÁLCULO DE PRECIO)
+router.get('/:clave', async (req, res) => {
+    const { clave } = req.params;
+    const claveNormalizada = String(clave).trim().toUpperCase();
+    console.log("Dentro /:clave");
+    try {
+        // 1. Obtener el producto base de la BD local ('y')
+        // *EXCLUIMOS*: los 4 campos que serán actualizados por la API externa.
+        const productoBase = await Producto.findByPk(claveNormalizada, {
+            attributes: { 
+                exclude: ['precio', 'existencia', 'ultima_compra', 'ultimo_costo'] 
+            }
+        });
+
+        if (!productoBase) {
+            return res.status(404).json({ error: 'Producto no encontrado en la base de datos local.' });
+        }
+        
+        // 2. Realizar UNA SOLA llamada al endpoint consolidado del servidor 'z'
+        const inventarioCompletoResponse = await axios.get(
+            `${process.env.INVENTARIO_API_URL}/inventariocompleto/${claveNormalizada}`
+        );
+
+        const invData = inventarioCompletoResponse.data; // Ya es el objeto directo
+        const productoFinal = productoBase.get({ plain: true });
+
+        // 3. Fusionar los datos actualizados y aplicar la lógica de precio
+        
+        // ----------------------------------------------------
+        // 🚨 CÓDIGO CLAVE: CÁLCULO DE IVA Y REDONDEO APLICADO
+        // ----------------------------------------------------
+        const precioNeto = invData.PRECIO
+            ? parseFloat(invData.PRECIO)
+            : 0;
+
+        let precioFinalVenta = null;
+
+        if (precioNeto > 0) {
+            // 1. Aplicar 16% de IVA (Precio Bruto)
+            const precioBruto = precioNeto * 1.16;
+
+            // 2. Aplicar reglas de redondeo
+            if (precioBruto < 5.00) {
+                // Si es menor a $5.00, se mantiene a dos decimales
+                precioFinalVenta = parseFloat(precioBruto.toFixed(2));
+            } else {
+                // Si es igual o mayor a $5.00, se redondea al entero superior
+                // Math.ceil() redondea al entero superior más cercano (ej. 5.01 -> 6, 5.00 -> 5)
+                precioFinalVenta = Math.ceil(precioBruto);
+            }
+        }
+        
+        // Asignar el precio final de venta
+        productoFinal.precio = precioFinalVenta; 
+        // ----------------------------------------------------
+        
+        // EXISTENCIA
+        productoFinal.existencia = invData.EXISTENCIA 
+            ? parseFloat(invData.EXISTENCIA) 
+            : 0.00;
+
+        // ÚLTIMO COSTO
+        productoFinal.ultimo_costo = invData.ULT_COSTO 
+            ? parseFloat(invData.ULT_COSTO) 
+            : null;
+
+        // ÚLTIMA COMPRA
+        productoFinal.ultima_compra = invData.FCH_ULTCOM || null;
+
+        res.status(200).json(productoFinal);
+    } catch (error) {
+        // Manejo de errores
         console.error('Error al obtener el producto y combinar datos externos:', error.message);
         res.status(500).json({ 
             error: 'Error al procesar la solicitud o al conectar con el servicio de inventario en tiempo real.',

@@ -107,6 +107,10 @@ app.use('/api/boletines', boletinesRoutes); // Acceso: POST /api/boletines/
 const envios = require('./routes/envios');
 app.use('/api/envios', envios);
 
+// Importa y usa las rutas de acercade
+const acerca_de = require('./routes/acerca_des');
+app.use('/api/acercade', acerca_de);
+
 // Importa y usa la ruta para el envío de correo (NUEVA RUTA)
 const facturacionRoutes = require('./routes/facturacion');
 app.use('/api/facturacion', facturacionRoutes); // Monta la ruta en /api/correo
