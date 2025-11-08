@@ -106,6 +106,7 @@ router.post('/', async (req, res) => {
             cantidad: item.cantidad,
             unidad: item.unidad,
             descripcion: item.descripcion,
+            estatus: "Pendiente de envío",
         }));
 
         // 4. Inserción masiva en la tabla EnvioProducto

@@ -130,79 +130,10 @@ router.post('/:folio/enviar-confirmacion', async (req, res) => {
     }
 });
 
-/* // Endpoint para enviar la confirmación de pedido
-router.post('/:folio/enviar-confirmacion', async (req, res) => {
-    const { folio } = req.params;
-    // 🚨 CLAVE: Extraer la fecha_entrega del cuerpo de la solicitud (req.body)
-    const { fecha_entrega } = req.body;
-
-    try {
-        if (!fecha_entrega) {
-            return res.status(400).json({ error: 'Falta la fecha de entrega en el cuerpo de la solicitud (body).' });
-        }
-
-        // 1. Obtener todas las partidas del pedido de la base de datos
-        const partidas = await Pedido.findAll({
-            where: { folio: folio },
-            order: [['id', 'ASC']]
-        });
-
-        if (!partidas || partidas.length === 0) {
-            return res.status(404).json({ error: `Pedido con folio ${folio} no encontrado.` });
-        }
-
-        // 2. Reestructurar las partidas en el objeto 'pedido'
-        const primeraPartida = partidas[0];
-
-        // Calcular el total sumando el total_partida de todas las filas
-        const total = partidas.reduce((sum, item) => sum + parseFloat(item.total_partida), 0);
-
-        // Mapear los datos al formato que PedidoEmail.jsx requiere
-        const pedidoData = {
-            folio: primeraPartida.folio,
-            emailCliente: primeraPartida.email,
-            enviar_a: primeraPartida.enviar_a,
-            estatus: primeraPartida.estatus,
-            createdAt: primeraPartida.createdAt || new Date().toISOString(),
-            fecha_entrega: fecha_entrega,
-            total: total.toFixed(2),
-            items: partidas.map(item => ({
-                clave: item.clave,
-                descripcion: item.descripcion,
-                cantidad: item.cantidad,
-                total_partida: item.total_partida,
-                linea: item.linea || 'SIN_LINEA'
-            }))
-        };
-
-        // 3. Renderizar el componente React a HTML estático
-        const html = renderToStaticMarkup(React.createElement(PedidoEmail, { pedido: pedidoData }));
-
-        // 4. Configurar y enviar el correo (código de Nodemailer...)
-        const mailOptions = {
-            from: '"Seal Market" <auto-confirm@sealmarket.mx>',
-            to: pedidoData.emailCliente,
-            subject: `Confirmación de Pedido #${pedidoData.folio}`,
-            html: html,
-        };
-
-        const info = await transporter.sendMail(mailOptions);
-
-        console.log('Mensaje enviado: %s', info.messageId);
-
-        res.status(200).json({
-            message: 'Correo de confirmación enviado con éxito.',
-            messageId: info.messageId
-        });
-
-    } catch (error) {
-        console.error('Error al enviar el correo de confirmación:', error);
-        res.status(500).json({ error: 'Error interno del servidor al enviar el correo.' });
-    }
-}); */
 
 // Endpoint para crear una nueva pedido
 router.post('/', async (req, res) => {
+    console.log("Crenado nvo pedido ",req.body);
     try {
         const nuevoPedido = await Pedido.bulkCreate(req.body);
         res.status(201).json(nuevoPedido);

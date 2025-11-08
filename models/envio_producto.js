@@ -43,6 +43,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false, 
     },
+    estatus: {
+      type: DataTypes.TEXT,
+      allowNull: false, 
+    },
     volumen: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: true, 
