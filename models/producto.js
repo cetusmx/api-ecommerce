@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     colocado_en: {
       type: DataTypes.STRING,
-      allowNull: false, 
+      allowNull: true, 
     },
     unidad_entrada: {
       type: DataTypes.STRING,

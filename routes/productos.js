@@ -5,7 +5,60 @@ const Producto = db.Producto;
 const { Op } = require('sequelize');
 const axios = require('axios');
 
-// productos.js (Endpoint POST /api/productos/existencias-masiva)
+// Endpoint para buscar productos por query en clave O descripcion
+router.get('/search', async (req, res) => {
+    // 1. Obtener la palabra clave de la URL
+    const { query } = req.query;
+
+    // 2. Validar que la query exista
+    if (!query || typeof query !== 'string' || query.trim() === '') {
+        return res.status(400).json({ 
+            error: 'Debe proporcionar una palabra de búsqueda válida en el parámetro "query".' 
+        });
+    }
+
+    // 3. Preparar la cadena de búsqueda para SQL LIKE
+    // Usamos el símbolo '%' para indicar que la coincidencia puede estar en cualquier parte del campo.
+    const searchString = `%${query.trim()}%`; 
+
+    try {
+        // 4. Ejecutar la búsqueda en Sequelize
+        const productos = await Producto.findAll({
+            where: {
+                // Usar Op.or para buscar coincidencia en al menos uno de los campos
+                [Op.or]: [
+                    {
+                        // Buscar en el campo 'clave'
+                        clave: {
+                            [Op.like]: searchString
+                        }
+                    },
+                    {
+                        // Buscar en el campo 'descripcion'
+                        descripcion: {
+                            [Op.like]: searchString
+                        }
+                    }
+                ]
+            },
+            // Opcional: Limitar los campos para mejorar rendimiento (si no necesita todos)
+            // attributes: ['clave', 'descripcion', 'linea', 'categoria', 'precio'], 
+            order: [['clave', 'ASC']]
+        });
+
+        if (productos.length === 0) {
+            return res.status(200).json({ message: 'No se encontraron productos que coincidan con la búsqueda.' });
+        }
+        console.log(productos.length);
+
+        // 5. Devolver los resultados
+        res.status(200).json(productos);
+
+    } catch (error) {
+        console.error('Error al realizar la búsqueda de productos:', error);
+        res.status(500).json({ error: 'Error interno del servidor al buscar productos.' });
+    }
+});
 
 router.post('/existencias-masiva', async (req, res) => {
     const claves = req.body.claves; 
@@ -305,7 +358,7 @@ router.get('/', async (req, res) => {
 router.get('/:clave', async (req, res) => {
     const { clave } = req.params;
     const claveNormalizada = String(clave).trim().toUpperCase();
-    console.log("Dentro /:clave");
+    //console.log("Dentro /:clave");
     try {
         // 1. Obtener el producto base de la BD local ('y')
         // *EXCLUIMOS*: los 4 campos que serán actualizados por la API externa.
