@@ -5,6 +5,128 @@ const Producto = db.Producto;
 const { Op } = require('sequelize');
 const axios = require('axios');
 
+// productos.js (Fragmento actualizado para /orings-respaldos)
+
+// Endpoint para obtener productos con perfil 'ORING' o 'RESPALDO' (ORQUESTADOR CON FILTRO)
+router.get('/orings-respaldos', async (req, res) => {
+    try {
+        // 1. Obtener la lista base de productos de la BD local ('y') FILTRADA
+        const productosBase = await Producto.findAll({
+            where: {
+                // Filtro: el campo 'perfil' debe ser 'ORING' O 'RESPALDO'
+                perfil: {
+                    [Op.in]: ['ORING', 'RESPALDO'] 
+                }
+            },
+            // *EXCLUIMOS*: 'precio', 'existencia', 'ultima_compra', y 'ultimo_costo'
+            attributes: { exclude: ['precio', 'existencia', 'ultima_compra', 'ultimo_costo'] }
+        });
+
+        if (productosBase.length === 0) {
+            return res.status(200).json([]);
+        }
+
+        // 2. Realizar las TRES llamadas concurrentes al servidor 'z'
+        const [preciosResponse, existenciasResponse, inventarioResponse] = await Promise.all([
+            axios.get(`${process.env.INVENTARIO_API_URL}/precios`),
+            axios.get(`${process.env.INVENTARIO_API_URL}/existencias`),
+            axios.get(`${process.env.INVENTARIO_API_URL}/inventario`) 
+        ]);
+
+        // 3. Creación de Mapas para búsqueda eficiente (O(1))
+        const preciosExternos = preciosResponse.data;
+        const existenciasExternas = existenciasResponse.data;
+        const inventarioExterno = inventarioResponse.data; 
+
+        // [Mapeo de datos externos omitido por brevedad, pero es idéntico a la versión anterior]
+        const preciosMap = new Map();
+        preciosExternos.forEach(p => {
+            preciosMap.set(String(p.CVE_ART).trim().toUpperCase(), p.PRECIO);
+        });
+
+        const existenciasMap = new Map();
+        existenciasExternas.forEach(e => {
+            const claveNormalizada = String(e.CVE_ART).trim().toUpperCase();
+            const existenciaActual = existenciasMap.get(claveNormalizada) || 0;
+            existenciasMap.set(claveNormalizada, existenciaActual + parseFloat(e.EXIST || 0));
+        });
+        
+        const inventarioMap = new Map();
+        inventarioExterno.forEach(i => {
+            const claveNormalizada = String(i.CVE_ART).trim().toUpperCase();
+            inventarioMap.set(claveNormalizada, {
+                FCH_ULTCOM: i.FCH_ULTCOM,
+                ULT_COSTO: i.ULT_COSTO,
+                UNI_MED: i.UNI_MED,
+            });
+        });
+
+
+        // 4. Fusionar los datos, aplicar IVA y construir la respuesta final
+        let productosFinales = productosBase.map(producto => {
+            const productoObj = producto.get({ plain: true });
+            const claveNormalizada = String(productoObj.clave).trim().toUpperCase();
+            
+            // ----------------------------------------------------
+            // 🚨 CAMBIO SOLICITADO: Combinación de Material y Dureza
+            // ----------------------------------------------------
+            const materialVal = productoObj.material ? String(productoObj.material).trim() : null;
+            const durezaVal = productoObj.dureza ? String(productoObj.dureza).trim() : null;
+            
+            if (materialVal && durezaVal) {
+                // Ejemplo: "NBR 90"
+                productoObj.material = `${materialVal} ${durezaVal}`; 
+            } else if (materialVal) {
+                // Si solo hay material, se queda solo material
+                productoObj.material = materialVal;
+            } else {
+                // Si no hay información, puede ser nulo
+                productoObj.material = null; 
+            }
+            
+            // Opcional: Eliminar 'dureza' del objeto final para limpiar la respuesta
+            delete productoObj.dureza; 
+            // ----------------------------------------------------
+            
+            // Datos Externos
+            const invData = inventarioMap.get(claveNormalizada);
+            
+            // LÓGICA DE CÁLCULO DE PRECIO
+            const precioNeto = preciosMap.has(claveNormalizada) ? parseFloat(preciosMap.get(claveNormalizada)) : 0;
+            let precioFinalVenta = null;
+
+            if (precioNeto > 0) {
+                const precioBruto = precioNeto * 1.16;
+                precioFinalVenta = (precioBruto < 5.00) ? parseFloat(precioBruto.toFixed(2)) : Math.ceil(precioBruto);
+            }
+            
+            productoObj.precio = precioFinalVenta; 
+            
+            // Integración de Existencia
+            productoObj.existencia = existenciasMap.has(claveNormalizada)
+                ? parseFloat(existenciasMap.get(claveNormalizada))
+                : 0.00;
+
+            // Integración de los campos de Inventario Base
+            productoObj.ultimo_costo = invData && invData.ULT_COSTO ? parseFloat(invData.ULT_COSTO) : null;
+            productoObj.ultima_compra = invData && invData.FCH_ULTCOM ? invData.FCH_ULTCOM : null; 
+
+            return productoObj;
+        });
+
+        //Filtrado de productos con precio igual a 0 o no calculado (null)
+        productosFinales = productosFinales.filter(p => p.precio !== 0 && p.precio !== null);
+
+        res.status(200).json(productosFinales);
+    } catch (error) {
+        console.error('Error al obtener productos ORING/RESPALDO y combinarlos con datos externos:', error);
+        res.status(500).json({ 
+            error: 'Error interno del servidor al obtener o combinar datos filtrados.',
+            detalle: error.message
+        });
+    }
+});
+
 // Endpoint para buscar productos por query en clave O descripcion
 router.get('/search', async (req, res) => {
     // 1. Obtener la palabra clave de la URL
@@ -294,7 +416,7 @@ router.get('/', async (req, res) => {
 
 
         // 4. Fusionar los datos, aplicar IVA y construir la respuesta final
-        const productosFinales = productosBase.map(producto => {
+        let productosFinales = productosBase.map(producto => {
             const productoObj = producto.get({ plain: true });
             const claveNormalizada = String(productoObj.clave).trim().toUpperCase();
             
@@ -343,6 +465,9 @@ router.get('/', async (req, res) => {
 
             return productoObj;
         });
+        
+        //Filtrado de productos con precio igual a 0 o no calculado (null)
+        productosFinales = productosFinales.filter(p => p.precio !== 0 && p.precio !== null);
 
         res.status(200).json(productosFinales);
     } catch (error) {
