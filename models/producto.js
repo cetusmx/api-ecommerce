@@ -28,6 +28,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false, 
     },
+    genero: {
+      type: DataTypes.STRING,
+      allowNull: true, 
+    },
+    familia: {
+      type: DataTypes.STRING,
+      allowNull: true, 
+    },
     colocado_en: {
       type: DataTypes.STRING,
       allowNull: true, 
