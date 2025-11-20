@@ -115,6 +115,10 @@ app.use('/api/acercade', acerca_de);
 const facturacionRoutes = require('./routes/facturacion');
 app.use('/api/facturacion', facturacionRoutes); // Monta la ruta en /api/correo
 
+// Importa y usa las rutas de contacto
+const contactoRoutes = require('./routes/contacto'); 
+app.use('/api/contacto', contactoRoutes); // Acceso: POST /api/contacto/enviar
+
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
