@@ -127,7 +127,7 @@ router.get('/orings-respaldos', async (req, res) => {
     }
 });
 
-// Endpoint para buscar productos por query en clave O descripcion
+/* // Endpoint para buscar productos por query en clave O descripcion
 router.get('/search', async (req, res) => {
     // 1. Obtener la palabra clave de la URL
     const { query } = req.query;
@@ -178,6 +178,108 @@ router.get('/search', async (req, res) => {
 
     } catch (error) {
         console.error('Error al realizar la búsqueda de productos:', error);
+        res.status(500).json({ error: 'Error interno del servidor al buscar productos.' });
+    }
+}); */
+
+// Endpoint para buscar productos por query en clave O descripcion
+router.get('/search', async (req, res) => {
+    // 1. Obtener la palabra clave de la URL
+    const { query } = req.query;
+
+    // 2. Validar que la query exista
+    if (!query || typeof query !== 'string' || query.trim() === '') {
+        return res.status(400).json({ 
+            error: 'Debe proporcionar una palabra de búsqueda válida en el parámetro "query".' 
+        });
+    }
+
+    // 3. Preparar la cadena de búsqueda para SQL LIKE
+    // Usamos el símbolo '%' para indicar que la coincidencia puede estar en cualquier parte del campo.
+    const searchString = `%${query.trim()}%`; 
+
+    try {
+        // 4. Ejecutar la búsqueda en Sequelize
+        const productos = await Producto.findAll({
+            where: {
+                // Usar Op.or para buscar coincidencia en al menos uno de los campos
+                [Op.or]: [
+                    {
+                        // Buscar en el campo 'clave'
+                        clave: {
+                            [Op.like]: searchString
+                        }
+                    },
+                    {
+                        // Buscar en el campo 'descripcion'
+                        descripcion: {
+                            [Op.like]: searchString
+                        }
+                    }
+                ]
+            },
+            // Se excluyen campos que pudieran existir pero que no se necesitan de la BD local (como se hace en /)
+            attributes: { exclude: ['precio', 'existencia', 'ultima_compra', 'ultimo_costo'] },
+            order: [['clave', 'ASC']]
+        });
+
+        if (productos.length === 0) {
+            return res.status(200).json({ message: 'No se encontraron productos que coincidan con la búsqueda.' });
+        }
+        // console.log(productos.length); // DEBUG (removido)
+
+        // ----------------------------------------------------
+        // 🚨 NUEVA LÓGICA: Obtener y calcular precios (replicado de /)
+        // ----------------------------------------------------
+        
+        // 5. Realizar la llamada al endpoint externo de precios
+        const preciosResponse = await axios.get(`${process.env.INVENTARIO_API_URL}/precios`);
+        const preciosExternos = preciosResponse.data; 
+
+        // 6. Crear el Mapa de Precios para búsqueda eficiente O(1)
+        const preciosMap = new Map();
+        preciosExternos.forEach(p => {
+            // Normalización de clave igual que en el endpoint '/'
+            preciosMap.set(String(p.CVE_ART).trim().toUpperCase(), p.PRECIO); 
+        });
+
+        // 7. Fusionar los datos y aplicar la lógica de precio
+        const productosConPrecio = productos.map(producto => {
+            const productoObj = producto.get({ plain: true });
+            const claveNormalizada = String(productoObj.clave).trim().toUpperCase();
+            
+            // Lógica de cálculo de precio (copiada del endpoint '/')
+            const precioNeto = preciosMap.has(claveNormalizada)
+                ? parseFloat(preciosMap.get(claveNormalizada))
+                : 0;
+
+            let precioFinalVenta = null;
+
+            if (precioNeto > 0) {
+                // 1. Aplicar 16% de IVA (Precio Bruto)
+                const precioBruto = precioNeto * 1.16;
+
+                // 2. Aplicar reglas de redondeo
+                if (precioBruto < 5.00) {
+                    // Si es menor a $5.00, se mantiene a dos decimales
+                    precioFinalVenta = parseFloat(precioBruto.toFixed(2));
+                } else {
+                    // Si es igual o mayor a $5.00, se redondea al entero superior
+                    precioFinalVenta = Math.ceil(precioBruto);
+                }
+            }
+            
+            // Asignar el campo precio al objeto
+            productoObj.precio = precioFinalVenta; 
+            
+            return productoObj;
+        });
+       
+        // 8. Devolver los resultados con el campo precio
+        res.status(200).json(productosConPrecio);
+
+    } catch (error) {
+        console.error('Error al realizar la búsqueda de productos y obtener precios:', error);
         res.status(500).json({ error: 'Error interno del servidor al buscar productos.' });
     }
 });
