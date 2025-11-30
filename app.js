@@ -119,6 +119,10 @@ app.use('/api/facturacion', facturacionRoutes); // Monta la ruta en /api/correo
 const contactoRoutes = require('./routes/contacto'); 
 app.use('/api/contacto', contactoRoutes); // Acceso: POST /api/contacto/enviar
 
+// Importa y usa la NUEVA RUTA para Cotización de Proveedores
+const cotizarProveedorRoutes = require('./routes/cotizarProveedor');
+app.use('/api/proveedor', cotizarProveedorRoutes); // Monta la ruta en /api/proveedor
+
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
