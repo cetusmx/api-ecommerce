@@ -14,9 +14,9 @@ const PORT = process.env.PORT || 3004;
 
 // Configure CORS to allow all origins. Quitar para produccion
 //app.use(cors()); 
-app.use(cors({
+/* app.use(cors({
   origin: ['http://localhost:3000', 'http://localhost:5173']
-}));
+})); */
 
 // Aumenta el límite de tamaño del payload a 50mb (o el tamaño que necesites)
 app.use(express.json({ limit: '50mb' }));
@@ -118,6 +118,10 @@ app.use('/api/facturacion', facturacionRoutes); // Monta la ruta en /api/correo
 // Importa y usa las rutas de contacto
 const contactoRoutes = require('./routes/contacto'); 
 app.use('/api/contacto', contactoRoutes); // Acceso: POST /api/contacto/enviar
+
+// Importa y usa la NUEVA RUTA para Cotización de Proveedores
+const cotizarProveedorRoutes = require('./routes/cotizarProveedor');
+app.use('/api/proveedor', cotizarProveedorRoutes); // Monta la ruta en /api/proveedor
 
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);
