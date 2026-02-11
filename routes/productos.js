@@ -15,7 +15,7 @@ router.get('/orings-respaldos', async (req, res) => {
             where: {
                 // Filtro: el campo 'perfil' debe ser 'ORING' O 'RESPALDO'
                 perfil: {
-                    [Op.in]: ['ORING', 'RESPALDO'] 
+                    [Op.in]: ['ORING', 'RESPALDO']
                 }
             },
             // *EXCLUIMOS*: 'precio', 'existencia', 'ultima_compra', y 'ultimo_costo'
@@ -28,15 +28,21 @@ router.get('/orings-respaldos', async (req, res) => {
 
         // 2. Realizar las TRES llamadas concurrentes al servidor 'z'
         const [preciosResponse, existenciasResponse, inventarioResponse] = await Promise.all([
-            axios.get(`${process.env.INVENTARIO_API_URL}/precios`),
-            axios.get(`${process.env.INVENTARIO_API_URL}/existencias`),
-            axios.get(`${process.env.INVENTARIO_API_URL}/inventario`) 
+            axios.get(`${process.env.INVENTARIO_API_URL}/precios`, {
+                headers: { 'x-api-key': process.env.FIREBIRD_API_KEY }
+            }),
+            axios.get(`${process.env.INVENTARIO_API_URL}/existencias`, {
+                headers: { 'x-api-key': process.env.FIREBIRD_API_KEY }
+            }),
+            axios.get(`${process.env.INVENTARIO_API_URL}/inventario, {
+        headers: { 'x-api-key': process.env.FIREBIRD_API_KEY }
+    }`)
         ]);
 
         // 3. Creación de Mapas para búsqueda eficiente (O(1))
         const preciosExternos = preciosResponse.data;
         const existenciasExternas = existenciasResponse.data;
-        const inventarioExterno = inventarioResponse.data; 
+        const inventarioExterno = inventarioResponse.data;
 
         // [Mapeo de datos externos omitido por brevedad, pero es idéntico a la versión anterior]
         const preciosMap = new Map();
@@ -50,7 +56,7 @@ router.get('/orings-respaldos', async (req, res) => {
             const existenciaActual = existenciasMap.get(claveNormalizada) || 0;
             existenciasMap.set(claveNormalizada, existenciaActual + parseFloat(e.EXIST || 0));
         });
-        
+
         const inventarioMap = new Map();
         inventarioExterno.forEach(i => {
             const claveNormalizada = String(i.CVE_ART).trim().toUpperCase();
@@ -66,31 +72,31 @@ router.get('/orings-respaldos', async (req, res) => {
         let productosFinales = productosBase.map(producto => {
             const productoObj = producto.get({ plain: true });
             const claveNormalizada = String(productoObj.clave).trim().toUpperCase();
-            
+
             // ----------------------------------------------------
             // 🚨 CAMBIO SOLICITADO: Combinación de Material y Dureza
             // ----------------------------------------------------
             const materialVal = productoObj.material ? String(productoObj.material).trim() : null;
             const durezaVal = productoObj.dureza ? String(productoObj.dureza).trim() : null;
-            
+
             if (materialVal && durezaVal) {
                 // Ejemplo: "NBR 90"
-                productoObj.material = `${materialVal} ${durezaVal}`; 
+                productoObj.material = `${materialVal} ${durezaVal}`;
             } else if (materialVal) {
                 // Si solo hay material, se queda solo material
                 productoObj.material = materialVal;
             } else {
                 // Si no hay información, puede ser nulo
-                productoObj.material = null; 
+                productoObj.material = null;
             }
-            
+
             // Opcional: Eliminar 'dureza' del objeto final para limpiar la respuesta
-            delete productoObj.dureza; 
+            delete productoObj.dureza;
             // ----------------------------------------------------
-            
+
             // Datos Externos
             const invData = inventarioMap.get(claveNormalizada);
-            
+
             // LÓGICA DE CÁLCULO DE PRECIO
             const precioNeto = preciosMap.has(claveNormalizada) ? parseFloat(preciosMap.get(claveNormalizada)) : 0;
             let precioFinalVenta = null;
@@ -99,9 +105,9 @@ router.get('/orings-respaldos', async (req, res) => {
                 const precioBruto = precioNeto * 1.16;
                 precioFinalVenta = (precioBruto < 5.00) ? parseFloat(precioBruto.toFixed(2)) : Math.ceil(precioBruto);
             }
-            
-            productoObj.precio = precioFinalVenta; 
-            
+
+            productoObj.precio = precioFinalVenta;
+
             // Integración de Existencia
             productoObj.existencia = existenciasMap.has(claveNormalizada)
                 ? parseFloat(existenciasMap.get(claveNormalizada))
@@ -109,7 +115,7 @@ router.get('/orings-respaldos', async (req, res) => {
 
             // Integración de los campos de Inventario Base
             productoObj.ultimo_costo = invData && invData.ULT_COSTO ? parseFloat(invData.ULT_COSTO) : null;
-            productoObj.ultima_compra = invData && invData.FCH_ULTCOM ? invData.FCH_ULTCOM : null; 
+            productoObj.ultima_compra = invData && invData.FCH_ULTCOM ? invData.FCH_ULTCOM : null;
 
             return productoObj;
         });
@@ -120,7 +126,7 @@ router.get('/orings-respaldos', async (req, res) => {
         res.status(200).json(productosFinales);
     } catch (error) {
         console.error('Error al obtener productos ORING/RESPALDO y combinarlos con datos externos:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Error interno del servidor al obtener o combinar datos filtrados.',
             detalle: error.message
         });
@@ -189,14 +195,14 @@ router.get('/search', async (req, res) => {
 
     // 2. Validar que la query exista
     if (!query || typeof query !== 'string' || query.trim() === '') {
-        return res.status(400).json({ 
-            error: 'Debe proporcionar una palabra de búsqueda válida en el parámetro "query".' 
+        return res.status(400).json({
+            error: 'Debe proporcionar una palabra de búsqueda válida en el parámetro "query".'
         });
     }
 
     // 3. Preparar la cadena de búsqueda para SQL LIKE
     // Usamos el símbolo '%' para indicar que la coincidencia puede estar en cualquier parte del campo.
-    const searchString = `%${query.trim()}%`; 
+    const searchString = `%${query.trim()}%`;
 
     try {
         // 4. Ejecutar la búsqueda en Sequelize
@@ -231,23 +237,25 @@ router.get('/search', async (req, res) => {
         // ----------------------------------------------------
         // 🚨 NUEVA LÓGICA: Obtener y calcular precios (replicado de /)
         // ----------------------------------------------------
-        
+
         // 5. Realizar la llamada al endpoint externo de precios
-        const preciosResponse = await axios.get(`${process.env.INVENTARIO_API_URL}/precios`);
-        const preciosExternos = preciosResponse.data; 
+        const preciosResponse = await axios.get(`${process.env.INVENTARIO_API_URL}/precios`, {
+            headers: { 'x-api-key': process.env.FIREBIRD_API_KEY }
+        });
+        const preciosExternos = preciosResponse.data;
 
         // 6. Crear el Mapa de Precios para búsqueda eficiente O(1)
         const preciosMap = new Map();
         preciosExternos.forEach(p => {
             // Normalización de clave igual que en el endpoint '/'
-            preciosMap.set(String(p.CVE_ART).trim().toUpperCase(), p.PRECIO); 
+            preciosMap.set(String(p.CVE_ART).trim().toUpperCase(), p.PRECIO);
         });
 
         // 7. Fusionar los datos y aplicar la lógica de precio
         const productosConPrecio = productos.map(producto => {
             const productoObj = producto.get({ plain: true });
             const claveNormalizada = String(productoObj.clave).trim().toUpperCase();
-            
+
             // Lógica de cálculo de precio (copiada del endpoint '/')
             const precioNeto = preciosMap.has(claveNormalizada)
                 ? parseFloat(preciosMap.get(claveNormalizada))
@@ -268,13 +276,13 @@ router.get('/search', async (req, res) => {
                     precioFinalVenta = Math.ceil(precioBruto);
                 }
             }
-            
+
             // Asignar el campo precio al objeto
-            productoObj.precio = precioFinalVenta; 
-            
+            productoObj.precio = precioFinalVenta;
+
             return productoObj;
         });
-       
+
         // 8. Devolver los resultados con el campo precio
         res.status(200).json(productosConPrecio);
 
@@ -285,7 +293,7 @@ router.get('/search', async (req, res) => {
 });
 
 router.post('/existencias-masiva', async (req, res) => {
-    const claves = req.body.claves; 
+    const claves = req.body.claves;
 
     if (!Array.isArray(claves) || claves.length === 0) {
         return res.status(400).json({ error: 'El cuerpo debe contener un arreglo no vacío de claves de producto en el campo "claves".' });
@@ -294,27 +302,33 @@ router.post('/existencias-masiva', async (req, res) => {
     const clavesNormalizadas = claves.map(c => String(c).trim().toUpperCase());
 
     try {
-        // 1. Llamada al endpoint externo de inventario filtrado (index.js)
-        const existenciasResponse = await axios.post(`${process.env.INVENTARIO_API_URL}/existencias-masiva-filtrada`, {
-             claves: clavesNormalizadas 
-        });
+        // 1. Llamada al endpoint externo de inventario filtrado (index.js) enviando la API KEY
+        const existenciasResponse = await axios.post(
+            `${process.env.INVENTARIO_API_URL}/existencias-masiva-filtrada`,
+            { claves: clavesNormalizadas }, // SEGUNDO ARGUMENTO: El cuerpo (Data)
+            {
+                headers: {
+                    'x-api-key': process.env.FIREBIRD_API_KEY // TERCER ARGUMENTO: Configuración (Headers)
+                }
+            }
+        );
 
         const existenciasExternas = existenciasResponse.data;
-        
+
         // 🚨 CAMBIO CLAVE: Usar un mapa para agrupar las existencias por clave
         // Mapa: Map<clave, Array< {almacen: N, existencia: X} >>
         const existenciasMap = new Map();
-        
+
         // 2. Procesar y Agrupar por Clave
         existenciasExternas.forEach(e => {
             const claveNormalizada = String(e.CVE_ART).trim().toUpperCase();
-            
+
             // Crea el objeto de existencia para el almacén actual
             const detalleExistencia = {
                 almacen: String(e.CVE_ALM),
                 existencia: parseFloat(e.EXIST || 0).toFixed(2)
             };
-            
+
             // Agrupa la existencia por clave
             if (existenciasMap.has(claveNormalizada)) {
                 existenciasMap.get(claveNormalizada).push(detalleExistencia);
@@ -327,14 +341,14 @@ router.post('/existencias-masiva', async (req, res) => {
         const resultadoFinal = clavesNormalizadas.map(clave => ({
             clave: clave,
             // Si la clave existe en el mapa, devuelve el arreglo de almacenes. Si no, devuelve un arreglo vacío.
-            existencias_por_almacen: existenciasMap.get(clave) || [] 
+            existencias_por_almacen: existenciasMap.get(clave) || []
         }));
 
         res.status(200).json(resultadoFinal);
 
     } catch (error) {
         console.error('Error al obtener existencias masivas filtradas:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Error interno del servidor al consultar existencias masivas.',
             detalle: error.message
         });
@@ -352,70 +366,6 @@ router.post('/', async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
-
-// Endpoint para actualizar las existencias de uno o varios productos de forma masiva
-/* router.patch('/existencias', async (req, res) => {
-    const t = await db.sequelize.transaction();
-    try {
-        const productosActualizados = req.body;
-        if (!Array.isArray(productosActualizados) || productosActualizados.length === 0) {
-            return res.status(400).json({ error: 'El cuerpo de la solicitud debe ser un arreglo no vacío de productos.' });
-        }
-
-        const clavesRecibidas = productosActualizados.map(p => p.clave);
-        const productosExistentes = await Producto.findAll({
-            attributes: ['clave'],
-            where: {
-                clave: {
-                    [db.Sequelize.Op.in]: clavesRecibidas
-                }
-            },
-            transaction: t
-        });
-
-        const clavesExistentes = new Set(productosExistentes.map(p => p.clave));
-        const productosParaActualizar = [];
-        const productosNoEncontrados = [];
-
-        productosActualizados.forEach(p => {
-            if (clavesExistentes.has(p.clave)) {
-                productosParaActualizar.push(p);
-            } else {
-                productosNoEncontrados.push(p.clave);
-            }
-        });
-
-        let updatedCount = 0;
-        if (productosParaActualizar.length > 0) {
-            for (const p of productosParaActualizar) {
-                const [filasActualizadas] = await Producto.update(
-                    { existencia: p.existencia },
-                    { where: { clave: p.clave }, transaction: t }
-                );
-                if (filasActualizadas > 0) {
-                    updatedCount++;
-                }
-            }
-        }
-
-        await t.commit();
-        let message = `Proceso de actualización de existencias completado. Se actualizaron ${updatedCount} productos.`;
-
-        if (productosNoEncontrados.length > 0) {
-            message += ` ${productosNoEncontrados.length} productos no encontrados: ${productosNoEncontrados.join(', ')}.`;
-        }
-
-        res.status(200).json({
-            message: message,
-            productosNoEncontrados: productosNoEncontrados
-        });
-
-    } catch (error) {
-        await t.rollback();
-        console.error('Error al actualizar existencias de forma masiva:', error);
-        res.status(500).json({ error: 'Error interno del servidor al actualizar existencias.' });
-    }
-}); */
 
 // Endpoint para obtener todas las categorías únicas de productos
 router.get('/categorias', async (req, res) => {
@@ -481,15 +431,21 @@ router.get('/', async (req, res) => {
 
         // 2. Realizar las TRES llamadas concurrentes al servidor 'z'
         const [preciosResponse, existenciasResponse, inventarioResponse] = await Promise.all([
-            axios.get(`${process.env.INVENTARIO_API_URL}/precios`),
-            axios.get(`${process.env.INVENTARIO_API_URL}/existencias`),
-            axios.get(`${process.env.INVENTARIO_API_URL}/inventario`) 
+            axios.get(`${process.env.INVENTARIO_API_URL}/precios`, {
+                headers: { 'x-api-key': process.env.FIREBIRD_API_KEY }
+            }),
+            axios.get(`${process.env.INVENTARIO_API_URL}/existencias`, {
+                headers: { 'x-api-key': process.env.FIREBIRD_API_KEY }
+            }),
+            axios.get(`${process.env.INVENTARIO_API_URL}/inventario`, {
+                headers: { 'x-api-key': process.env.FIREBIRD_API_KEY }
+            })
         ]);
 
         // 3. Crear Mapas para una búsqueda eficiente O(1)
         const preciosExternos = preciosResponse.data;
         const existenciasExternas = existenciasResponse.data;
-        const inventarioExterno = inventarioResponse.data; 
+        const inventarioExterno = inventarioResponse.data;
 
         // Mapa 1: Precios (CVE_ART -> PRECIO)
         const preciosMap = new Map();
@@ -504,7 +460,7 @@ router.get('/', async (req, res) => {
             const existenciaActual = existenciasMap.get(claveNormalizada) || 0;
             existenciasMap.set(claveNormalizada, existenciaActual + parseFloat(e.EXIST || 0));
         });
-        
+
         // Mapa 3: Inventario Base (CVE_ART -> {FCH_ULTCOM, ULT_COSTO})
         const inventarioMap = new Map();
         inventarioExterno.forEach(i => {
@@ -521,10 +477,10 @@ router.get('/', async (req, res) => {
         let productosFinales = productosBase.map(producto => {
             const productoObj = producto.get({ plain: true });
             const claveNormalizada = String(productoObj.clave).trim().toUpperCase();
-            
+
             // Datos Externos
             const invData = inventarioMap.get(claveNormalizada);
-            
+
             // ----------------------------------------------------
             // 🚨 CAMBIO CLAVE: CÁLCULO DE IVA Y REDONDEO APLICADO
             // ----------------------------------------------------
@@ -547,11 +503,11 @@ router.get('/', async (req, res) => {
                     precioFinalVenta = Math.ceil(precioBruto);
                 }
             }
-            
+
             // Asignar el precio final de venta
-            productoObj.precio = precioFinalVenta; 
+            productoObj.precio = precioFinalVenta;
             // ----------------------------------------------------
-            
+
             // Integración de Existencia (original)
             productoObj.existencia = existenciasMap.has(claveNormalizada)
                 ? parseFloat(existenciasMap.get(claveNormalizada))
@@ -563,18 +519,18 @@ router.get('/', async (req, res) => {
                 : null;
             productoObj.ultima_compra = invData && invData.FCH_ULTCOM
                 ? invData.FCH_ULTCOM
-                : null; 
+                : null;
 
             return productoObj;
         });
-        
+
         //Filtrado de productos con precio igual a 0 o no calculado (null)
         productosFinales = productosFinales.filter(p => p.precio !== 0 && p.precio !== null);
 
         res.status(200).json(productosFinales);
     } catch (error) {
         console.error('Error al obtener productos y combinarlos con datos externos:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Error interno del servidor al obtener o combinar datos.',
             detalle: error.message
         });
@@ -590,25 +546,27 @@ router.get('/:clave', async (req, res) => {
         // 1. Obtener el producto base de la BD local ('y')
         // *EXCLUIMOS*: los 4 campos que serán actualizados por la API externa.
         const productoBase = await Producto.findByPk(claveNormalizada, {
-            attributes: { 
-                exclude: ['precio', 'existencia', 'ultima_compra', 'ultimo_costo'] 
+            attributes: {
+                exclude: ['precio', 'existencia', 'ultima_compra', 'ultimo_costo']
             }
         });
 
         if (!productoBase) {
             return res.status(404).json({ error: 'Producto no encontrado en la base de datos local.' });
         }
-        
+
         // 2. Realizar UNA SOLA llamada al endpoint consolidado del servidor 'z'
         const inventarioCompletoResponse = await axios.get(
-            `${process.env.INVENTARIO_API_URL}/inventariocompleto/${claveNormalizada}`
+            `${process.env.INVENTARIO_API_URL}/inventariocompleto/${claveNormalizada}`, {
+            headers: { 'x-api-key': process.env.FIREBIRD_API_KEY }
+        }
         );
 
         const invData = inventarioCompletoResponse.data; // Ya es el objeto directo
         const productoFinal = productoBase.get({ plain: true });
 
         // 3. Fusionar los datos actualizados y aplicar la lógica de precio
-        
+
         // ----------------------------------------------------
         // 🚨 CÓDIGO CLAVE: CÁLCULO DE IVA Y REDONDEO APLICADO
         // ----------------------------------------------------
@@ -632,19 +590,19 @@ router.get('/:clave', async (req, res) => {
                 precioFinalVenta = Math.ceil(precioBruto);
             }
         }
-        
+
         // Asignar el precio final de venta
-        productoFinal.precio = precioFinalVenta; 
+        productoFinal.precio = precioFinalVenta;
         // ----------------------------------------------------
-        
+
         // EXISTENCIA
-        productoFinal.existencia = invData.EXISTENCIA 
-            ? parseFloat(invData.EXISTENCIA) 
+        productoFinal.existencia = invData.EXISTENCIA
+            ? parseFloat(invData.EXISTENCIA)
             : 0.00;
 
         // ÚLTIMO COSTO
-        productoFinal.ultimo_costo = invData.ULT_COSTO 
-            ? parseFloat(invData.ULT_COSTO) 
+        productoFinal.ultimo_costo = invData.ULT_COSTO
+            ? parseFloat(invData.ULT_COSTO)
             : null;
 
         // ÚLTIMA COMPRA
@@ -654,7 +612,7 @@ router.get('/:clave', async (req, res) => {
     } catch (error) {
         // Manejo de errores
         console.error('Error al obtener el producto y combinar datos externos:', error.message);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Error al procesar la solicitud o al conectar con el servicio de inventario en tiempo real.',
             detalle: error.message
         });
