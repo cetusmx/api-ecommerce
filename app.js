@@ -14,9 +14,9 @@ const PORT = process.env.PORT || 3004;
 
 // Configure CORS to allow all origins. Quitar para produccion
 //app.use(cors()); 
-/* app.use(cors({
+app.use(cors({
   origin: ['http://localhost:3000', 'http://localhost:5173']
-})); */
+}));
 
 // Aumenta el límite de tamaño del payload a 50mb (o el tamaño que necesites)
 app.use(express.json({ limit: '50mb' }));
