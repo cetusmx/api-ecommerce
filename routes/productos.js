@@ -128,7 +128,7 @@ router.get('/orings-respaldos', async (req, res) => {
         //Filtrado de productos con precio igual a 0 o no calculado (null)
         productosFinales = productosFinales.filter(p => p.precio !== 0 && p.precio !== null);
 
-        console.log("Productos devueltos: ", productosFinales.slice(0, 4));
+        //console.log("Productos devueltos: ", productosFinales.slice(0, 4));
 
         res.status(200).json(productosFinales);
     } catch (error) {
@@ -379,7 +379,7 @@ router.get('/', async (req, res) => {
         // 1. Obtener la lista base de productos de la BD local ('y')
         // *EXCLUIMOS*: 'precio', 'existencia', 'ultima_compra', y 'ultimo_costo'
         const productosBase = await Producto.findAll({
-            attributes: { exclude: ['precio', 'existencia', 'ultima_compra', 'ultimo_costo'] }
+            attributes: { exclude: ['precio', 'existencia', 'ultima_compra', 'ultimo_costo', 'proveedor1', 'proveedor2'] }
         });
 
         // 2. Realizar las TRES llamadas concurrentes al servidor 'z'
@@ -467,9 +467,9 @@ router.get('/', async (req, res) => {
                 : 0.00;
 
             // Integración de los nuevos campos de Inventario Base (original)
-            productoObj.ultimo_costo = invData && invData.ULT_COSTO
+            /* productoObj.ultimo_costo = invData && invData.ULT_COSTO
                 ? parseFloat(invData.ULT_COSTO)
-                : null;
+                : null; */
             productoObj.ultima_compra = invData && invData.FCH_ULTCOM
                 ? invData.FCH_ULTCOM
                 : null;
