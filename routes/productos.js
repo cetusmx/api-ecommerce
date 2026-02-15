@@ -34,9 +34,9 @@ router.get('/orings-respaldos', async (req, res) => {
             axios.get(`${process.env.INVENTARIO_API_URL}/existencias`, {
                 headers: { 'x-api-key': process.env.FIREBIRD_API_KEY }
             }),
-            axios.get(`${process.env.INVENTARIO_API_URL}/inventario, {
+            axios.get(`${process.env.INVENTARIO_API_URL}/inventario`, {
         headers: { 'x-api-key': process.env.FIREBIRD_API_KEY }
-    }`)
+    })
         ]);
 
         // 3. Creación de Mapas para búsqueda eficiente (O(1))
