@@ -94,7 +94,7 @@ const PedidoEmail = ({ pedido }) => {
           <thead>
             <tr>
               <th style={styles.header}>
-                <h1 style={styles.headerTitle}>¡Hola, {pedido.nombreSaludo}!</h1>
+                <h1 style={styles.headerTitle}>¡Hola, {pedido.enviar_a}!</h1>
                 {/* <h1 style={styles.headerTitle}>¡Gracias por tu pedido!</h1> */}
                 <p style={styles.headerSubtitle}>
                   Confirmación del Pedido #{pedido.folio}

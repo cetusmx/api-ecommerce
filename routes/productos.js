@@ -473,6 +473,18 @@ router.get('/', async (req, res) => {
         //Filtrado de productos con precio igual a 0 o no calculado (null)
         productosFinales = productosFinales.filter(p => p.precio !== 0 && p.precio !== null);
 
+        // ==========================================================
+        // BLOQUE DE DEBUGEÓ: Analizar producto específico
+        // ==========================================================
+        /* const productoARevisar = productosFinales.find(p => p.clave.trim() === 'PK1810008025063');
+        if (productoARevisar) {
+            console.log('🔍 DEBUG PRODUCTO PK1810008025063:');
+            console.log(JSON.stringify(productoARevisar, null, 2));
+        } else {
+            console.log('⚠️ DEBUG: El producto PK1810008025063 no fue encontrado en los resultados enriquecidos.');
+        } */
+        // ==========================================================
+
         res.status(200).json(productosFinales);
     } catch (error) {
         console.error('Error al obtener productos y combinarlos con datos externos:', error);

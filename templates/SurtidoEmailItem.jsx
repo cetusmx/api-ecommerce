@@ -38,7 +38,10 @@ const SurtidoEmailItem = ({ item }) => {
       </td>
       {/* Columna 2: Cantidad */}
       <td style={{ ...styles.td, ...styles.quantity }}>
-        {item.cantidad} UNIDAD(ES)
+        {item.cantidad} PIEZA(S)
+      </td>
+      <td style={{ ...styles.td, ...styles.quantity }}>
+        {item.existencia} PIEZA(S)
       </td>
     </tr>
   );

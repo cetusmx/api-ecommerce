@@ -107,6 +107,9 @@ const SurtidoEmail = ({ envio }) => {
                       <th style={{ ...styles.itemsTh, textAlign: "center" }}>
                         Cantidad a Surtir
                       </th>
+                      <th style={{ ...styles.itemsTh, textAlign: "center" }}>
+                        Existencias
+                      </th>
                     </tr>
                   </thead>
                   <tbody>

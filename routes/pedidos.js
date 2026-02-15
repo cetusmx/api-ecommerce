@@ -100,6 +100,7 @@ router.post('/:folio/enviar-confirmacion', async (req, res) => {
                 cantidad: item.cantidad,
                 total_partida: item.total_partida,
                 linea: item.linea || 'SIN_LINEA',
+                perfil: item.perfil || 'SIN PERFIL',
                 fecha_entrega: item.fecha_entrega || 'N/A' 
             }))
         };
@@ -133,7 +134,7 @@ router.post('/:folio/enviar-confirmacion', async (req, res) => {
 
 // Endpoint para crear una nueva pedido
 router.post('/', async (req, res) => {
-    console.log("Crenado nvo pedido ",req.body);
+    //console.log("Crenado nvo pedido ",req.body);
     try {
         const nuevoPedido = await Pedido.bulkCreate(req.body);
         res.status(201).json(nuevoPedido);

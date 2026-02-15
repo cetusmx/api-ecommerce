@@ -36,7 +36,7 @@ const ALMACEN_EMAILS = {
     '1': 'rortiz@sealmarket.mx',
     '5': 'mazatlan@sealmarket.mx',
     '6': 'zacatecas@sealmarket.mx',
-    '7': 'arodriguez@sealmarket.mx',
+    '7': 'orodriguez@sealmarket.mx',
 };
 
 // =======================================================
@@ -193,7 +193,7 @@ router.post('/surtir', async (req, res) => {
     // 🚨 CORRECCIÓN CLAVE: Aseguramos que data sea un arreglo.
     // Si req.body es un arreglo, lo usa. Si es un objeto, lo envuelve en un arreglo.
     const enviosArray = Array.isArray(req.body) ? req.body : [req.body];
-    console.log("dentro /surtir");
+    //console.log("Pedido: ",enviosArray);
 
     if (enviosArray.length === 0) {
         return res.status(400).json({ error: 'El cuerpo debe ser un arreglo no vacío de envíos.' });
@@ -205,6 +205,8 @@ router.post('/surtir', async (req, res) => {
     for (const envio of enviosArray) {
         const almacen = String(envio.almacen_asignado);
         const destinatario = ALMACEN_EMAILS[almacen];
+        const items_envioo = envio.items_envio;
+        console.log(items_envioo);
         
         if (!destinatario) {
             resultados.push({ 
@@ -222,7 +224,7 @@ router.post('/surtir', async (req, res) => {
             await transporter.sendMail({
                 from: '"Notificador de Surtido" <auto-confirm@sealmarket.mx>',
                 to: destinatario,
-                cc: ['orodriguez@sealmarket.mx', 'arodriguez@sealmarket.mx'],
+                cc: ['orodriguez@sealmarket.mx', 'orodriguez@sealmarket.mx'],
                 subject: `[URGENTE] Nuevo Pedido - Surtido para Almacén ${almacen} (Folio: ${envio.folio})`,
                 html: htmlContent,
             });

@@ -2,7 +2,7 @@ const React = require('react');
 
 const PedidoEmailItem = ({ item }) => {
   // Asumimos que el backend proveerá la URL completa de la imagen
-  const imageUrl = item.imageUrl || `https://www.sealmarket.mx/Perfiles/${item.linea}.jpg`; // Fallback por si acaso
+  const imageUrl = item.imageUrl || `https://www.sealmarket.net/Perfiles/${item.perfil}.png`; // Fallback por si acaso
 
   const formatDate = (dateString) => {
     if (!dateString || dateString === 'N/A') {
@@ -49,8 +49,8 @@ const PedidoEmailItem = ({ item }) => {
       verticalAlign: 'middle',
     },
     img: {
-      width: '80px',
-      height: '80px',
+      width: '40px',
+      height: '40px',
       objectFit: 'cover',
       marginRight: '15px',
     },
@@ -85,7 +85,7 @@ const PedidoEmailItem = ({ item }) => {
         <div style={styles.productInfo}>
           <img src={imageUrl} alt={item.descripcion} style={styles.img} />
           <div>
-            <a href={`https://www.sealmarket.mx/producto/${item.clave}`} style={styles.description}>
+            <a href={`https://www.sealmarket.net/producto/${item.clave}`} style={styles.description}>
               {item.descripcion}
             </a>
             <p style={styles.sku}>SKU: {item.clave}</p>
