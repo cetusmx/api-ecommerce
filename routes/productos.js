@@ -19,7 +19,7 @@ router.get('/orings-respaldos', async (req, res) => {
                 }
             },
             // *EXCLUIMOS*: 'precio', 'existencia', 'ultima_compra', y 'ultimo_costo'
-            attributes: { exclude: ['precio', 'existencia', 'ultima_compra', 'ultimo_costo'] }
+            attributes: { exclude: ['precio', 'existencia', 'ultima_compra', 'ultimo_costo', 'proveedor1', 'proveedor2'] }
         });
 
         if (productosBase.length === 0) {
@@ -35,8 +35,8 @@ router.get('/orings-respaldos', async (req, res) => {
                 headers: { 'x-api-key': process.env.FIREBIRD_API_KEY }
             }),
             axios.get(`${process.env.INVENTARIO_API_URL}/inventario`, {
-        headers: { 'x-api-key': process.env.FIREBIRD_API_KEY }
-    })
+                headers: { 'x-api-key': process.env.FIREBIRD_API_KEY }
+            })
         ]);
 
         // 3. Creación de Mapas para búsqueda eficiente (O(1))
@@ -114,14 +114,21 @@ router.get('/orings-respaldos', async (req, res) => {
                 : 0.00;
 
             // Integración de los campos de Inventario Base
-            productoObj.ultimo_costo = invData && invData.ULT_COSTO ? parseFloat(invData.ULT_COSTO) : null;
+            //productoObj.ultimo_costo = invData && invData.ULT_COSTO ? parseFloat(invData.ULT_COSTO) : null;
             productoObj.ultima_compra = invData && invData.FCH_ULTCOM ? invData.FCH_ULTCOM : null;
+
+            // --- ELIMINACIÓN DE CAMPOS QUE NO QUIERO DEVOLVER ---
+            /* delete productoObj.proveedor1;
+            delete productoObj.proveedor2;
+            delete productoObj.ultimo_costo; */
 
             return productoObj;
         });
 
         //Filtrado de productos con precio igual a 0 o no calculado (null)
         productosFinales = productosFinales.filter(p => p.precio !== 0 && p.precio !== null);
+
+        console.log("Productos devueltos: ", productosFinales.slice(0, 4));
 
         res.status(200).json(productosFinales);
     } catch (error) {
