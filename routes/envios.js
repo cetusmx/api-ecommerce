@@ -258,7 +258,7 @@ router.post('/surtir', async (req, res) => {
                 });
             }
             // -----------------------------------
-            console.log(envio);
+            //console.log(envio);
 
             const htmlContent = renderSurtidoEmail(envio);
 
