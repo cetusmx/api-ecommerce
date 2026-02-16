@@ -62,7 +62,7 @@ const SurtidoEmail = ({ envio }) => {
           <thead>
             <tr>
               <td style={styles.header}>
-                <h1 style={styles.headerTitle}>🚨 NUEVO PEDIDO PARA SURTIR</h1>
+                <h1 style={styles.headerTitle}>🚨 NUEVO PEDIDO PARA SURTIR (PRUEBA)</h1>
                 <p style={styles.headerSubtitle}>
                   <strong>Almacén Responsable:</strong> {envio.almacen_asignado} | <strong>Folio Envío:</strong> {envio.folio}
                 </p>

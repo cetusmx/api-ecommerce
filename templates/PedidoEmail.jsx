@@ -40,18 +40,33 @@ const PedidoEmail = ({ pedido }) => {
     content: {
       padding: "30px",
     },
+    // --- SECCIÓN ESTILIZADA DE DETALLES ---
     orderDetails: {
       width: "100%",
       borderCollapse: "collapse",
-      marginBottom: "30px",
+      marginBottom: "25px",
+      backgroundColor: "#fafafa", // Fondo muy tenue para diferenciar la zona
+      border: "1px solid #f0f0f0",
+      borderRadius: "4px",
     },
     orderDetailTd: {
-      padding: "8px 0",
-      fontSize: "14px",
+      padding: "6px 12px", // Reducido el espacio vertical (de 8px a 6px)
+      fontSize: "13px",
+      borderBottom: "1px solid #eeeeee", // Línea divisoria sutil
     },
     orderDetailLabel: {
-      color: "#555",
+      color: "#888",
+      fontSize: "11px",
+      textTransform: "uppercase", // Estilo moderno tipo etiqueta
+      fontWeight: "bold",
+      letterSpacing: "0.5px",
     },
+    orderDetailValue: {
+      textAlign: "right",
+      color: "#444",
+      fontWeight: "bold",
+    },
+    // --------------------------------------
     itemsTable: {
       width: "100%",
       borderCollapse: "collapse",
@@ -95,7 +110,6 @@ const PedidoEmail = ({ pedido }) => {
             <tr>
               <th style={styles.header}>
                 <h1 style={styles.headerTitle}>¡Hola, {pedido.enviar_a}!</h1>
-                {/* <h1 style={styles.headerTitle}>¡Gracias por tu pedido!</h1> */}
                 <p style={styles.headerSubtitle}>
                   Confirmación del Pedido #{pedido.folio}
                 </p>
@@ -105,73 +119,30 @@ const PedidoEmail = ({ pedido }) => {
           <tbody>
             <tr>
               <td style={styles.content}>
+                {/* TABLA DE DETALLES OPTIMIZADA */}
                 <table style={styles.orderDetails}>
                   <tbody>
                     <tr>
                       <td style={styles.orderDetailTd}>
-                        <strong style={styles.orderDetailLabel}>
-                          Titular de la cuenta:
-                        </strong>
+                        <span style={styles.orderDetailLabel}>Pedido realizado</span>
                       </td>
-                      <td
-                        style={{
-                          ...styles.orderDetailTd,
-                          textAlign: "right",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {pedido.nombreTitular}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style={styles.orderDetailTd}>
-                        <strong style={styles.orderDetailLabel}>
-                          Pedido realizado:
-                        </strong>
-                      </td>
-                      <td
-                        style={{ ...styles.orderDetailTd, textAlign: "right" }}
-                      >
+                      <td style={{ ...styles.orderDetailTd, ...styles.orderDetailValue }}>
                         {formatDate(pedido.createdAt)}
                       </td>
                     </tr>
-                    {/* <tr>
-                      <td style={styles.orderDetailTd}>
-                        <strong style={styles.orderDetailLabel}>
-                          Fecha de Entrega Estimada:
-                        </strong>
-                      </td>
-                      <td
-                        style={{
-                          ...styles.orderDetailTd,
-                          textAlign: "right",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {formatDate(pedido.fecha_entrega)}
-                      </td>
-                    </tr> */}
                     <tr>
                       <td style={styles.orderDetailTd}>
-                        <strong style={styles.orderDetailLabel}>
-                          Enviar a:
-                        </strong>
+                        <span style={styles.orderDetailLabel}>Enviar a</span>
                       </td>
-                      <td
-                        style={{ ...styles.orderDetailTd, textAlign: "right" }}
-                      >
+                      <td style={{ ...styles.orderDetailTd, ...styles.orderDetailValue }}>
                         {pedido.enviar_a}
                       </td>
                     </tr>
                     <tr>
-                      <td style={styles.orderDetailTd}>
-                        <strong style={styles.orderDetailLabel}>
-                          Estatus del pedido:
-                        </strong>
+                      <td style={{ ...styles.orderDetailTd, borderBottom: "none" }}>
+                        <span style={styles.orderDetailLabel}>Estatus del pedido</span>
                       </td>
-                      <td
-                        style={{ ...styles.orderDetailTd, textAlign: "right" }}
-                      >
+                      <td style={{ ...styles.orderDetailTd, ...styles.orderDetailValue, borderBottom: "none" }}>
                         {pedido.estatus}
                       </td>
                     </tr>

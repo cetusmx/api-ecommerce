@@ -49,24 +49,24 @@ const PedidoEmailItem = ({ item }) => {
       verticalAlign: 'middle',
     },
     img: {
+      display: 'block',
       width: '40px',
       height: '40px',
       objectFit: 'cover',
-      marginRight: '15px',
     },
     productInfo: {
       display: 'flex',
       alignItems: 'center',
     },
     description: {
+      fontSize: '12px',
+      color: '#555',
+    },
+    sku: {
       fontSize: '14px',
       fontWeight: 'bold',
       color: '#2177c2',
       textDecoration: 'none',
-    },
-    sku: {
-      fontSize: '12px',
-      color: '#555',
     },
     quantity: {
       fontSize: '14px',
@@ -83,12 +83,18 @@ const PedidoEmailItem = ({ item }) => {
     <tr style={styles.tr}>
       <td style={styles.td}>
         <div style={styles.productInfo}>
-          <img src={imageUrl} alt={item.descripcion} style={styles.img} />
-          <div>
+          <img 
+          src={imageUrl} 
+          alt={item.descripcion}
+          width="40" 
+          height="40"
+          style={styles.img} />
+          <div style={{ marginLeft: '15px' }}>
+            <p style={styles.sku}>CLAVE: {item.clave}</p>
             <a href={`https://www.sealmarket.net/producto/${item.clave}`} style={styles.description}>
               {item.descripcion}
             </a>
-            <p style={styles.sku}>SKU: {item.clave}</p>
+            
             {item.fecha_entrega && item.fecha_entrega !== 'N/A' && (
                 <p style={{...styles.sku, color: '#339966', fontWeight: 'bold'}}>
                     Entrega: {formatDate(item.fecha_entrega)}
