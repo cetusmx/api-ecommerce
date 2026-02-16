@@ -5,34 +5,30 @@ const SurtidoEmailItem = require("./SurtidoEmailItem");
 
 const SurtidoEmail = ({ envio }) => {
   const styles = {
-    // ... (Mantén los mismos estilos generales de PedidoEmail.jsx)
     container: {
-      maxWidth: "680px",
+      maxWidth: "800px", // Aumentado ligeramente para las nuevas columnas
       margin: "0 auto",
       backgroundColor: "#ffffff",
       border: "1px solid #ddd",
       borderRadius: "8px",
       overflow: "hidden",
+      fontFamily: "Arial, sans-serif"
     },
     header: {
-      backgroundColor: "#d9534e", // Un color distintivo para interno
+      backgroundColor: "#d9534e",
       color: "#ffffff",
-      padding: "30px 20px",
+      padding: "20px",
       textAlign: "left",
     },
-    headerTitle: {
-      margin: 0,
-      fontSize: "28px",
-    },
-    content: {
-      padding: "30px",
-    },
-    // ... otros estilos ...
+    headerTitle: { margin: 0, fontSize: "24px" },
+    headerSubtitle: { margin: "5px 0 0 0", fontSize: "14px", opacity: 0.9 },
+    content: { padding: "20px" },
     addressDetails: {
       border: "1px solid #ddd",
       padding: "15px",
       backgroundColor: "#f9f9f9",
-      marginBottom: "30px",
+      marginBottom: "20px",
+      fontSize: "14px"
     },
     itemsTable: {
         width: "100%",
@@ -41,10 +37,11 @@ const SurtidoEmail = ({ envio }) => {
     },
     itemsTh: {
         borderBottom: "2px solid #333",
-        padding: "10px 0",
+        padding: "10px 5px",
         textAlign: "left",
-        fontSize: "16px",
-        color: "#333"
+        fontSize: "13px",
+        color: "#333",
+        backgroundColor: "#eee"
     },
     footer: {
       backgroundColor: "#f4f4f4",
@@ -60,6 +57,64 @@ const SurtidoEmail = ({ envio }) => {
 
   return (
     <html>
+      <body>
+        <table cellPadding="0" cellSpacing="0" style={styles.container}>
+          <thead>
+            <tr>
+              <td style={styles.header}>
+                <h1 style={styles.headerTitle}>🚨 NUEVO PEDIDO PARA SURTIR</h1>
+                <p style={styles.headerSubtitle}>
+                  <strong>Almacén Responsable:</strong> {envio.almacen_asignado} | <strong>Folio Envío:</strong> {envio.folio}
+                </p>
+                <p style={styles.headerSubtitle}>
+                  <strong>Pedido:</strong> {envio.folio_pedido} | <strong>Logística:</strong> {envio.tipo_logistica}
+                </p>
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style={styles.content}>
+                <div style={styles.addressDetails}>
+                    <p style={{ margin: "0 0 10px 0", fontWeight: "bold", borderBottom: "1px solid #ccc" }}>DATOS DE ENTREGA:</p>
+                    <p style={{ margin: "3px 0" }}><strong>{destino.nombre_completo}</strong></p>
+                    <p style={{ margin: "3px 0" }}>{destino.calle} #{destino.numero_ext}, Col. {destino.colonia}</p>
+                    <p style={{ margin: "3px 0" }}>{destino.ciudad}, {destino.estado} | CP: {destino.codigo_postal}</p>
+                    <p style={{ margin: "10px 0 0 0", fontSize: "12px", color: "#666 italic" }}>
+                        <strong>Instrucciones:</strong> {destino.instrucciones_entrega || 'Sin instrucciones adicionales'}
+                    </p>
+                </div>
+
+                <table style={styles.itemsTable} cellPadding="0" cellSpacing="0">
+                  <thead>
+                    <tr>
+                      <th style={styles.itemsTh}>Producto / Descripción</th>
+                      <th style={{ ...styles.itemsTh, textAlign: "center", width: "80px" }}>Cant.</th>
+                      <th style={{ ...styles.itemsTh, width: "120px" }}>Últ. Compra</th>
+                      <th style={{ ...styles.itemsTh, textAlign: "right", width: "100px" }}>Últ. Costo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {envio.items_envio.map((item) => (
+                      <SurtidoEmailItem key={item.clave} item={item} />
+                    ))}
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td style={styles.footer}>
+                <p>Aviso generado automáticamente para surtido de ventas en línea.</p>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </body>
+    </html>
+  );
+    {/* <html>
       <body style={styles.body}>
         <table cellPadding="0" cellSpacing="0" style={styles.container}>
           <thead>
@@ -82,7 +137,7 @@ const SurtidoEmail = ({ envio }) => {
               <td style={styles.content}>
                 <h2>Detalles de Surtido</h2>
                 
-                {/* 1. SECCIÓN DE DESTINO PARA LA GUÍA */}
+               
                 <div style={styles.addressDetails}>
                     <p style={{ margin: 0, fontWeight: "bold" }}>DESTINO FINAL:</p>
                     <p style={{ margin: "5px 0" }}>
@@ -99,7 +154,7 @@ const SurtidoEmail = ({ envio }) => {
                     </p>
                 </div>
 
-                {/* 2. SECCIÓN DE PRODUCTOS A SURTIR */}
+                
                 <table style={styles.itemsTable} cellPadding="0" cellSpacing="0">
                   <thead>
                     <tr>
@@ -135,8 +190,8 @@ const SurtidoEmail = ({ envio }) => {
           </tfoot>
         </table>
       </body>
-    </html>
-  );
+    </html> */}
+
 };
 
 module.exports = SurtidoEmail;

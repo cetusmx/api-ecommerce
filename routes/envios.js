@@ -1,5 +1,3 @@
-// /routes/envios.js (Añadir este bloque al final del archivo)
-
 // Importar utilidades necesarias
 const express = require('express');
 const router = express.Router();
@@ -10,6 +8,7 @@ const { renderToStaticMarkup } = require('react-dom/server');
 const Envio = db.Envio; 
 // Necesitas el modelo EnvioProducto para las partidas
 const EnvioProducto = db.EnvioProducto;
+const axios = require('axios');
 
 // ⚠️ CONFIGURACIÓN DE NODEMAILER (Asegúrate que estas credenciales sean válidas)
 // Asumo que ya tienes esta configuración al inicio del archivo
@@ -218,9 +217,45 @@ router.post('/surtir', async (req, res) => {
             continue;
         }
         
+        try {
+            // --- 2. ENRIQUECIMIENTO DE DATOS ---
+            const claves = envio.items_envio.map(item => item.clave);
+            
+            // Llamada a la API de Inventario
+            const responseInterna = await axios.post(`${process.env.INVENTARIO_API_URL}/envios/datos-internos`, {
+                claves: claves,
+                lista_precios: "1", // Valor por defecto según tu ejemplo
+                SUCURSAL: "1"
+            });
+
+            if (responseInterna.data && responseInterna.data.success) {
+                const datosExtra = responseInterna.data.data;
+
+                // Mapear los datos extra para un acceso rápido por clave (CVE_ART)
+                const mapaExtra = {};
+                datosExtra.forEach(prod => {
+                    mapaExtra[prod.CVE_ART] = {
+                        ULT_COSTO: prod.ULT_COSTO,
+                        ULTIMO_PROVEEDOR: prod.ULTIMO_PROVEEDOR,
+                        FCH_ULTCOM: prod.FCH_ULTCOM,
+                        existencias: prod.existencias
+                    };
+                });
+
+                // Inyectar los datos en items_envio
+                envio.items_envio = envio.items_envio.map(item => {
+                    const extra = mapaExtra[item.clave] || {};
+                    return {
+                        ...item,
+                        ...extra // Esto agrega ULT_COSTO, ULTIMO_PROVEEDOR, etc.
+                    };
+                });
+            }
+            // -----------------------------------
+
         const htmlContent = renderSurtidoEmail(envio);
 
-        try {
+       
             await transporter.sendMail({
                 from: '"Notificador de Surtido" <auto-confirm@sealmarket.mx>',
                 to: destinatario,
