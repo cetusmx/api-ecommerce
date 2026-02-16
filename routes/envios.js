@@ -5,7 +5,7 @@ const nodemailer = require('nodemailer');
 const db = require('../models');
 const React = require('react');
 const { renderToStaticMarkup } = require('react-dom/server');
-const Envio = db.Envio; 
+const Envio = db.Envio;
 // Necesitas el modelo EnvioProducto para las partidas
 const EnvioProducto = db.EnvioProducto;
 const axios = require('axios');
@@ -13,17 +13,17 @@ const axios = require('axios');
 // ⚠️ CONFIGURACIÓN DE NODEMAILER (Asegúrate que estas credenciales sean válidas)
 // Asumo que ya tienes esta configuración al inicio del archivo
 const transporter = nodemailer.createTransport({
-    host: "mail.sealmarket.mx", 
-    port: 465, 
-    secure: true, 
+    host: "mail.sealmarket.mx",
+    port: 465,
+    secure: true,
     auth: {
         user: "auto-confirm@sealmarket.mx", // O la cuenta que uses para enviar
-        pass: "Trof#4102O" 
+        pass: "Trof#4102O"
     }
 });
 
 // Importar la nueva plantilla (Ajusta la ruta si es necesario)
-const SurtidoEmail = require('../templates/SurtidoEmail'); 
+const SurtidoEmail = require('../templates/SurtidoEmail');
 
 // Función auxiliar para renderizar el componente React
 const renderSurtidoEmail = (envioData) => {
@@ -46,22 +46,22 @@ router.post('/', async (req, res) => {
     // ⚠️ Se espera un ARREGLO de envíos, aunque el ejemplo muestra un solo objeto.
     // Si siempre es un objeto, desestructuraríamos directamente const data = req.body.
     // Asumiremos que el cuerpo es UN OBJETO (el primer elemento del arreglo que mencionaste).
-    const data = req.body; 
-   
+    const data = req.body;
+
     // Si el cuerpo llega como [ {...} ], ajusta a const data = req.body[0];
-    
+
     // Extraer campos de alto nivel y el domicilio de envío
-    const { 
-        folio: folioEnvio, 
-        folio_pedido, 
-        almacen_asignado, 
-        estado_envio, 
-        tipo_logistica, 
-        destino: shippingAddress, 
-        items_envio 
+    const {
+        folio: folioEnvio,
+        folio_pedido,
+        almacen_asignado,
+        estado_envio,
+        tipo_logistica,
+        destino: shippingAddress,
+        items_envio
     } = data;
-    
-     console.log(items_envio);
+
+    console.log(items_envio);
 
     // Iniciar una transacción de Sequelize
     const t = await db.sequelize.transaction();
@@ -116,7 +116,7 @@ router.post('/', async (req, res) => {
 
         // 5. Si todo fue bien, confirma la transacción
         await t.commit();
-        
+
         // 6. Respuesta de éxito
         res.status(201).json({
             message: 'Envío y productos asociados creados exitosamente.',
@@ -128,11 +128,11 @@ router.post('/', async (req, res) => {
         // Si algo falló, revierte todas las operaciones de la transacción
         await t.rollback();
         console.error('Error al crear el registro de envío (TRANSACCIÓN REVERTIDA):', error);
-        
+
         // Ajustamos la respuesta a 500 para errores de base de datos no esperados
-        res.status(500).json({ 
-            error: 'Fallo al crear el registro de envío o sus productos.', 
-            detalle: error.message 
+        res.status(500).json({
+            error: 'Fallo al crear el registro de envío o sus productos.',
+            detalle: error.message
         });
     }
 });
@@ -165,7 +165,7 @@ router.get('/pedido/:folioPedido', async (req, res) => {
 router.put('/:folio/:folioPedido', async (req, res) => {
     try {
         const { folio, folioPedido } = req.params;
-        
+
         // Sequelize buscará el registro por sus claves compuestas
         const [filasActualizadas, envioActualizado] = await Envio.update(req.body, {
             where: { folio: folio, folio_pedido: folioPedido },
@@ -176,7 +176,7 @@ router.put('/:folio/:folioPedido', async (req, res) => {
             return res.status(404).json({ error: 'Envío no encontrado con el folio y folio de pedido proporcionados.' });
         }
         // Devuelve el registro actualizado
-        res.status(200).json(envioActualizado[0]); 
+        res.status(200).json(envioActualizado[0]);
     } catch (error) {
         console.error('Error al actualizar el registro de envío:', error);
         res.status(400).json({ error: error.message });
@@ -206,27 +206,33 @@ router.post('/surtir', async (req, res) => {
         const destinatario = ALMACEN_EMAILS[almacen];
         const items_envioo = envio.items_envio;
         console.log(items_envioo);
-        
+
         if (!destinatario) {
-            resultados.push({ 
-                folio: envio.folio, 
-                almacen: almacen, 
-                status: 'Error', 
-                message: `Correo no definido para el almacén ${almacen}` 
+            resultados.push({
+                folio: envio.folio,
+                almacen: almacen,
+                status: 'Error',
+                message: `Correo no definido para el almacén ${almacen}`
             });
             continue;
         }
-        
+
         try {
             // --- 2. ENRIQUECIMIENTO DE DATOS ---
             const claves = envio.items_envio.map(item => item.clave);
-            
+
             // Llamada a la API de Inventario
             const responseInterna = await axios.post(`${process.env.INVENTARIO_API_URL}/envios/datos-internos`, {
                 claves: claves,
                 lista_precios: "1", // Valor por defecto según tu ejemplo
                 SUCURSAL: "1"
-            });
+            },
+                {
+                    headers: {
+                        'x-api-key': process.env.FIREBIRD_API_KEY, // Se agrega la llave de seguridad
+                        'Content-Type': 'application/json'
+                    }
+                });
 
             if (responseInterna.data && responseInterna.data.success) {
                 const datosExtra = responseInterna.data.data;
@@ -252,10 +258,11 @@ router.post('/surtir', async (req, res) => {
                 });
             }
             // -----------------------------------
+            console.log(envio);
 
-        const htmlContent = renderSurtidoEmail(envio);
+            const htmlContent = renderSurtidoEmail(envio);
 
-       
+
             await transporter.sendMail({
                 from: '"Notificador de Surtido" <auto-confirm@sealmarket.mx>',
                 to: destinatario,
@@ -263,22 +270,22 @@ router.post('/surtir', async (req, res) => {
                 subject: `[URGENTE] Nuevo Pedido - Surtido para Almacén ${almacen} (Folio: ${envio.folio})`,
                 html: htmlContent,
             });
-            
-            resultados.push({ 
-                folio: envio.folio, 
-                almacen: almacen, 
-                status: 'Éxito', 
-                message: `Notificación enviada a ${destinatario}` 
+
+            resultados.push({
+                folio: envio.folio,
+                almacen: almacen,
+                status: 'Éxito',
+                message: `Notificación enviada a ${destinatario}`
             });
 
         } catch (error) {
             console.error(`Error al enviar correo para el envío ${envio.folio}:`, error);
             // Revertimos la respuesta a 500 si hay un fallo de Nodemailer
-            resultados.push({ 
-                folio: envio.folio, 
-                almacen: almacen, 
-                status: 'Error', 
-                message: `Fallo de Nodemailer: ${error.message}` 
+            resultados.push({
+                folio: envio.folio,
+                almacen: almacen,
+                status: 'Error',
+                message: `Fallo de Nodemailer: ${error.message}`
             });
         }
     }

@@ -1,18 +1,18 @@
+// /SurtidoEmail/SurtidoEmailItem.jsx
 const React = require("react");
 
 const SurtidoEmailItem = ({ item }) => {
   const styles = {
     mainTr: { backgroundColor: "#ffffff" },
-    stockTr: { backgroundColor: "#fcfcfc" },
     td: {
       padding: "12px 5px",
       verticalAlign: "top",
       fontSize: "13px",
-      borderBottom: "1px solid #eee"
+      borderBottom: "1px solid #eeeeee"
     },
-    description: { margin: 0, fontWeight: "bold", color: "#333" },
-    clave: { margin: 0, fontSize: "11px", color: "#777" },
-    dataExtra: { margin: 0, fontSize: "11px", color: "#555" },
+    description: { margin: "0", fontWeight: "bold", color: "#333333" },
+    clave: { margin: "0", fontSize: "11px", color: "#777777" },
+    dataExtra: { margin: "0", fontSize: "11px", color: "#555555" },
     quantity: {
       fontWeight: "bold",
       textAlign: "center",
@@ -24,51 +24,24 @@ const SurtidoEmailItem = ({ item }) => {
       fontWeight: "bold",
       color: "#2e7d32"
     },
-    stockBadge: {
-      display: "inline-block",
-      padding: "2px 6px",
-      marginRight: "8px",
+    // Estilos para la "falsa" etiqueta (badge) usando celdas de tabla
+    badgeTd: {
       backgroundColor: "#e9ecef",
-      borderRadius: "4px",
+      border: "1px solid #dee2e6",
+      padding: "2px 8px",
       fontSize: "11px",
-      color: "#444",
-      border: "1px solid #dee2e6"
+      color: "#444444",
+      fontFamily: "Arial, sans-serif"
     }
   };
-  /* const styles = {
-    tr: {
-      borderBottom: "1px solid #eee",
-    },
-    td: {
-      padding: "10px 0",
-      verticalAlign: "middle",
-      fontSize: "14px",
-    },
-    clave: {
-      fontSize: "12px",
-      color: "#666",
-    },
-    description: {
-      fontSize: "14px",
-      fontWeight: "bold",
-      color: "#333",
-    },
-    quantity: {
-      fontSize: "14px",
-      fontWeight: "bold",
-      textAlign: "center",
-      color: "#d9534e", // Rojo para resaltar la cantidad
-    },
-  }; */
 
-  // Formatear fecha si existe
-  const fechaCompra = item.FCH_ULTCOM
-    ? new Date(item.FCH_ULTCOM).toLocaleDateString('es-MX')
+  const fechaCompra = item.FCH_ULTCOM 
+    ? new Date(item.FCH_ULTCOM).toLocaleDateString('es-MX') 
     : 'N/A';
 
   return (
     <React.Fragment>
-      {/* FILA 1: DATOS PRINCIPALES Y COSTOS */}
+      {/* FILA 1: DATOS PRINCIPALES */}
       <tr style={styles.mainTr}>
         <td style={styles.td}>
           <p style={styles.description}>{item.descripcion}</p>
@@ -86,35 +59,33 @@ const SurtidoEmailItem = ({ item }) => {
         </td>
       </tr>
 
-      {/* FILA 2: DESGLOSE DE EXISTENCIAS */}
-      <tr style={styles.stockTr}>
-        <td colSpan="4" style={{ ...styles.td, padding: "8px 10px", backgroundColor: "#f8f9fa" }}>
-          <span style={{ fontSize: "11px", fontWeight: "bold", color: "#666", marginRight: "10px" }}>
-            EXISTENCIAS:
-          </span>
-          {item.existencias ? Object.entries(item.existencias).map(([sucursal, cant]) => (
-            <span key={sucursal} style={styles.stockBadge}>
-              <strong>{sucursal}:</strong> {cant}
-            </span>
-          )) : <span style={{ fontSize: "11px", color: "#999" }}>No hay datos de inventario disponibles</span>}
+      {/* FILA 2: EXISTENCIAS (Usando tablas anidadas para forzar el espaciado) */}
+      <tr>
+        <td colSpan="4" style={{ padding: "5px 10px 15px 10px", backgroundColor: "#f8f9fa", borderBottom: "2px solid #dddddd" }}>
+          <table cellPadding="0" cellSpacing="0" border="0">
+            <tr>
+              <td style={{ fontSize: "11px", fontWeight: "bold", color: "#666666", paddingRight: "10px" }}>
+                EXISTENCIAS:
+              </td>
+              {item.existencias && Object.entries(item.existencias).map(([sucursal, cant]) => (
+                <React.Fragment key={sucursal}>
+                  {/* Celda que actúa como el "Badge" */}
+                  <td style={styles.badgeTd}>
+                    <strong>{sucursal}:</strong>&nbsp;{cant}
+                  </td>
+                  {/* Celda de espacio artificial (Sustituye al margin) */}
+                  <td width="10">&nbsp;</td> 
+                </React.Fragment>
+              ))}
+              {!item.existencias && (
+                <td style={{ fontSize: "11px", color: "#999999" }}>No hay datos disponibles</td>
+              )}
+            </tr>
+          </table>
         </td>
       </tr>
     </React.Fragment>
   );
 };
-/*  <tr style={styles.tr}>
-   
-   <td style={styles.td}>
-     <p style={styles.description}>{item.descripcion}</p>
-     <p style={styles.clave}>Clave: {item.clave}</p>
-   </td>
-  
-   <td style={{ ...styles.td, ...styles.quantity }}>
-     {item.cantidad} PIEZA(S)
-   </td>
-   <td style={{ ...styles.td, ...styles.quantity }}>
-     {item.existencia} PIEZA(S)
-   </td>
- </tr> */
 
 module.exports = SurtidoEmailItem;
