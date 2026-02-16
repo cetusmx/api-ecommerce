@@ -35,7 +35,7 @@ const ALMACEN_EMAILS = {
     '1': 'rortiz@sealmarket.mx',
     '5': 'mazatlan@sealmarket.mx',
     '6': 'zacatecas@sealmarket.mx',
-    '7': 'orodriguez@sealmarket.mx',
+    '7': 'arodriguez@sealmarket.mx',
 };
 
 // =======================================================
@@ -266,7 +266,7 @@ router.post('/surtir', async (req, res) => {
             await transporter.sendMail({
                 from: '"Notificador de Surtido" <auto-confirm@sealmarket.mx>',
                 to: destinatario,
-                cc: ['orodriguez@sealmarket.mx', 'orodriguez@sealmarket.mx'],
+                cc: ['orodriguez@sealmarket.mx', 'arodriguez@sealmarket.mx'],
                 subject: `[URGENTE] Nuevo Pedido - Surtido para Almacén ${almacen} (Folio: ${envio.folio})`,
                 html: htmlContent,
             });
