@@ -37,8 +37,8 @@ const PedidoEmail = ({ pedido }) => {
       textAlign: "left",
     },
     headerTitle: { margin: 0, fontSize: "24px", color: "#ffffff" },
-    headerSubtitle2: { margin: "3px 0 0 0", fontSize: "16px", opacity: 0.9, color: "#ffffff" },
-    headerSubtitle1: { margin: "10px 0 0 0", fontSize: "24px", opacity: 0.9, color: "#ffffff" },
+    headerSubtitle2: { margin: "3px 0 0 0", fontSize: "15px", opacity: 0.9, color: "#ffffff" },
+    headerSubtitle1: { margin: "10px 0 0 0", fontSize: "24px", opacity: 0.9, color: "#ffffff", fontWeight: "400" },
     headerSubtitle: { margin: "5px 0 0 0", fontSize: "14px", opacity: 0.9, color: "#ffffff" },
     content: { padding: "20px" },
     // ... (los demás estilos se mantienen igual)
@@ -95,7 +95,7 @@ const PedidoEmail = ({ pedido }) => {
               <td colSpan="2" style={styles.headerContainer1}>
                 <table width="100%" cellPadding="0" cellSpacing="0" border="0">
                   <tr>
-                    <td style={{ textAlign: "left", verticalAlign: "middle", width: "80px" }}>
+                    <td style={{ textAlign: "left", verticalAlign: "middle", width: "80px", marginLeft: "20px" }}>
                       <img
                         src={logoUrl}
                         alt="Seal Market"
@@ -111,7 +111,7 @@ const PedidoEmail = ({ pedido }) => {
                     </td>
                     <td style={{ textAlign: "right", verticalAlign: "middle" }}>
                       <p style={styles.headerSubtitle1}>
-                        <strong>Confirmación de Pedido</strong>
+                        Confirmación de Pedido
                       </p>
                       <p style={styles.headerSubtitle2}>
                         Pedido #{pedido.folio}
