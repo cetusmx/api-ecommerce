@@ -25,7 +25,7 @@ const PedidoEmail = ({ pedido }) => {
     },
     // Estilo unificado para la celda del encabezado
     headerContainer: {
-      backgroundColor: "#2177c2",
+      backgroundColor: "#5c98cc",
       color: "#ffffff",
       padding: "25px 20px",
       textAlign: "left",
