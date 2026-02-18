@@ -4,7 +4,7 @@ const PedidoEmailItem = require('./PedidoEmailItem');
 const PedidoEmail = ({ pedido }) => {
   const primerNombre = pedido.enviar_a ? pedido.enviar_a.split(' ')[0] : 'Cliente';
   const domicilio = pedido.domicilio || {};
-  
+
   // Lógica para la referencia (últimos 8 dígitos)
   const referenciaPago = pedido.folio ? pedido.folio.toString().slice(-8) : '';
 
@@ -59,17 +59,17 @@ const PedidoEmail = ({ pedido }) => {
       marginTop: "5px"
     },
     itemsTable: {
-        width: "100%",
-        borderCollapse: "collapse",
-        marginBottom: "30px",
+      width: "100%",
+      borderCollapse: "collapse",
+      marginBottom: "30px",
     },
     itemsTh: {
-        borderBottom: "2px solid #333333",
-        padding: "10px 5px",
-        textAlign: "left",
-        fontSize: "13px",
-        color: "#333333",
-        backgroundColor: "#eeeeee"
+      borderBottom: "2px solid #333333",
+      padding: "10px 5px",
+      textAlign: "left",
+      fontSize: "13px",
+      color: "#333333",
+      backgroundColor: "#eeeeee"
     },
     totalSection: {
       padding: "20px",
@@ -107,32 +107,40 @@ const PedidoEmail = ({ pedido }) => {
           <tbody>
             <tr>
               <td style={styles.content}>
-                
+
                 {/* 1. DETALLES DE ENVÍO */}
                 <div style={styles.orderDetailsBox}>
-                    <p style={{ margin: "0 0 10px 0", fontWeight: "bold", borderBottom: "1px solid #cccccc", color: "#2177c2" }}>
-                        DETALLES DE ENVÍO:
-                    </p>
-                    <p style={{ margin: "3px 0" }}><strong>Entregar a:</strong> {pedido.enviar_a}</p>
-                    <p style={{ margin: "3px 0" }}>
-                        {domicilio.calle} #{domicilio.numero_ext}{domicilio.numero_int ? `, Int. ${domicilio.numero_int}` : ''}
-                    </p>
-                    <p style={{ margin: "3px 0" }}>Col. {domicilio.colonia}, C.P. {domicilio.codigo_postal}</p>
-                    <p style={{ margin: "3px 0" }}>{domicilio.ciudad}, {domicilio.estado}</p>
-                    
-                    <p style={{ margin: "10px 0 0 0", paddingTop: "10px", borderTop: "1px dashed #cccccc" }}>
-                        <strong>Forma de pago:</strong> {pedido.tipo_logistica === 'pagoTransf' ? 'Transferencia Bancaria' : pedido.tipo_logistica}
-                    </p>
+                  <p style={{ margin: "0 0 10px 0", fontWeight: "bold", borderBottom: "1px solid #cccccc", color: "#2177c2" }}>
+                    DETALLES DE ENVÍO:
+                  </p>
+                  <p style={{ margin: "3px 0" }}><strong>Entregar a:</strong> {pedido.enviar_a}</p>
+                  <p style={{ margin: "3px 0" }}>
+                    {domicilio.calle} #{domicilio.numero_ext}{domicilio.numero_int ? `, Int. ${domicilio.numero_int}` : ''}
+                  </p>
+                  <p style={{ margin: "3px 0" }}>Col. {domicilio.colonia}, C.P. {domicilio.codigo_postal}</p>
+                  <p style={{ margin: "3px 0" }}>{domicilio.ciudad}, {domicilio.estado}</p>
+
+                  <p style={{ margin: "10px 0 0 0", paddingTop: "10px", borderTop: "1px dashed #cccccc" }}>
+                    <strong>Forma de pago:</strong> {pedido.tipo_logistica === 'pagoTransf' ? 'Transferencia Bancaria' : pedido.tipo_logistica}
+                  </p>
                 </div>
 
                 {/* 2. DATOS BANCARIOS (CONDICIONAL) */}
+                {/* 2. DATOS BANCARIOS (CONDICIONAL) */}
                 {pedido.tipo_logistica === 'pagoTransf' && (
                   <div style={styles.bankInfoBox}>
-                    <p style={{ margin: "0 0 10px 0", fontWeight: "bold", borderBottom: "1px solid #c3e6cb", color: "#155724" }}>
+                    {/* Título con mensaje de advertencia en el mismo renglón */}
+                    <p style={{ margin: "0 0 10px 0", borderBottom: "1px solid #c3e6cb", paddingBottom: "5px" }}>
+                      <span style={{ fontWeight: "bold", color: "#155724", fontSize: "14px" }}>
                         DATOS PARA LA TRANSFERENCIA:
+                      </span>
+                      <span style={{ color: "#d9534f", fontSize: "12px", marginLeft: "10px", fontStyle: "italic" }}>
+                        &nbsp;&nbsp;(Su pedido comenzará a procesarse una vez confirmado el pago)
+                      </span>
                     </p>
+
                     <p style={{ margin: "0 0 10px 0", fontSize: "13px" }}>Realiza tu pago directamente en nuestra cuenta bancaria:</p>
-                    
+
                     <table cellPadding="0" cellSpacing="0" style={{ fontSize: "13px", width: "100%" }}>
                       <tr><td style={{ padding: "2px 0" }}><strong>Banco:</strong> BBVA Bancomer</td></tr>
                       <tr><td style={{ padding: "2px 0" }}><strong>Titular:</strong> Alberto Rodríguez Salas</td></tr>
@@ -168,11 +176,11 @@ const PedidoEmail = ({ pedido }) => {
               </td>
             </tr>
             <tr>
-                <td style={styles.totalSection}>
-                    <p style={{ margin: 0, fontSize: "18px", fontWeight: "bold" }}>
-                        Total del Pedido: ${parseFloat(pedido.total).toFixed(2)}
-                    </p>
-                </td>
+              <td style={styles.totalSection}>
+                <p style={{ margin: 0, fontSize: "18px", fontWeight: "bold" }}>
+                  Total del Pedido: ${parseFloat(pedido.total).toFixed(2)}
+                </p>
+              </td>
             </tr>
           </tbody>
           <tfoot>
