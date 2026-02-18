@@ -6,7 +6,9 @@ const PedidoEmail = ({ pedido }) => {
   const domicilio = pedido.domicilio || {};
 
   // Lógica para la referencia (últimos 8 dígitos)
-  const referenciaPago = pedido.folio ? pedido.folio.toString().substring(0,8) : '';
+  const referenciaPago = pedido.folio ? pedido.folio.toString().substring(0, 8) : '';
+
+  const logoUrl = "https://www.sealmarket.net/Sugeridos/logo.png";
 
   const formatDate = (dateString) => {
     const options = { day: "numeric", month: "long", year: "numeric" };
@@ -103,6 +105,21 @@ const PedidoEmail = ({ pedido }) => {
                 </p>
               </td>
             </tr>
+            <td style={{ textAlign: "right", verticalAlign: "middle", width: "150px" }}>
+              {/* LOGO CON ATRIBUTOS EXPLÍCITOS PARA OUTLOOK */}
+              <img
+                src={logoUrl}
+                alt="Seal Market"
+                width="120"
+                style={{
+                  display: "block",
+                  marginLeft: "auto",
+                  border: "0",
+                  width: "120px",
+                  height: "auto"
+                }}
+              />
+            </td>
           </thead>
           <tbody>
             <tr>
