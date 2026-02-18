@@ -2,7 +2,14 @@ const React = require('react');
 
 const PedidoEmailItem = ({ item }) => {
   // Fallback para la imagen del producto
-  const imageUrl = item.imageUrl || `https://www.sealmarket.net/Perfiles/${item.perfil}.png`;
+  //const imageUrl = item.imageUrl || `https://www.sealmarket.net/Perfiles/${item.perfil}.png`;
+
+  // Determine the correct image URL based on category
+  const perfilesUrl = `https://www.sealmarket.net/Perfiles/${item.perfil}.png`;
+  const sugeridosUrl = `https://www.sealmarket.net/Sugeridos/${item.clave}.jpg`;
+  const imageUrl = (item.categoria === 'Herramientas' || item.categoria === 'Accesorios' || item.categoria === 'Estuches' || item.categoria === 'Accesorios hidráulicos')
+    ? sugeridosUrl
+    : perfilesUrl;
 
   const formatDate = (dateString) => {
     if (!dateString || dateString === 'N/A') return 'Fecha no disponible';
