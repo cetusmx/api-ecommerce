@@ -8,157 +8,94 @@ const PedidoEmail = ({ pedido }) => {
   };
 
   const styles = {
-    body: {
-      fontFamily: "Arial, sans-serif",
-      color: "#333",
-      backgroundColor: "#f4f4f4",
-      margin: 0,
-      padding: "20px",
-    },
     container: {
-      maxWidth: "680px",
+      maxWidth: "800px",
       margin: "0 auto",
       backgroundColor: "#ffffff",
-      border: "1px solid #ddd",
+      border: "1px solid #dddddd",
       borderRadius: "8px",
       overflow: "hidden",
+      fontFamily: "Arial, sans-serif"
     },
     header: {
       backgroundColor: "#2177c2",
       color: "#ffffff",
-      padding: "30px 20px",
-      textAlign: "center",
+      padding: "20px",
+      textAlign: "left",
     },
-    headerTitle: {
-      margin: 0,
-      fontSize: "28px",
+    headerTitle: { margin: 0, fontSize: "24px" },
+    headerSubtitle: { margin: "5px 0 0 0", fontSize: "14px", opacity: 0.9 },
+    content: { padding: "20px" },
+    orderDetailsBox: {
+      border: "1px solid #dddddd",
+      padding: "15px",
+      backgroundColor: "#f9f9f9",
+      marginBottom: "20px",
+      fontSize: "14px"
     },
-    headerSubtitle: {
-      margin: "5px 0 0",
-      fontSize: "16px",
-    },
-    content: {
-      padding: "30px",
-    },
-    // --- SECCIÓN ESTILIZADA DE DETALLES ---
-    orderDetails: {
-      width: "100%",
-      borderCollapse: "collapse",
-      marginBottom: "25px",
-      backgroundColor: "#fafafa", // Fondo muy tenue para diferenciar la zona
-      border: "1px solid #f0f0f0",
-      borderRadius: "4px",
-    },
-    orderDetailTd: {
-      padding: "6px 12px", // Reducido el espacio vertical (de 8px a 6px)
-      fontSize: "13px",
-      borderBottom: "1px solid #eeeeee", // Línea divisoria sutil
-    },
-    orderDetailLabel: {
-      color: "#888",
-      fontSize: "11px",
-      textTransform: "uppercase", // Estilo moderno tipo etiqueta
-      fontWeight: "bold",
-      letterSpacing: "0.5px",
-    },
-    orderDetailValue: {
-      textAlign: "right",
-      color: "#444",
-      fontWeight: "bold",
-    },
-    // --------------------------------------
     itemsTable: {
-      width: "100%",
-      borderCollapse: "collapse",
+        width: "100%",
+        borderCollapse: "collapse",
+        marginBottom: "30px",
     },
     itemsTh: {
-      borderBottom: "2px solid #ddd",
-      padding: "0 10px 10px 10px",
-      textAlign: "left",
-      color: "#555",
-      fontSize: "14px",
+        borderBottom: "2px solid #333333",
+        padding: "10px 5px",
+        textAlign: "left",
+        fontSize: "13px",
+        color: "#333333",
+        backgroundColor: "#eeeeee"
     },
     totalSection: {
-      padding: "20px 30px",
+      padding: "20px",
       textAlign: "right",
       backgroundColor: "#f9f9f9",
-      borderTop: "1px solid #ddd",
-    },
-    totalText: {
-      margin: 0,
-      fontSize: "18px",
-      fontWeight: "bold",
+      borderTop: "1px solid #dddddd",
     },
     footer: {
+      backgroundColor: "#f4f4f4",
       padding: "20px",
       textAlign: "center",
       fontSize: "12px",
-      color: "#888",
+      color: "#666666",
+      borderTop: "1px solid #dddddd",
     },
   };
 
   return (
-    <html lang="es">
-      <head>
-        <meta charSet="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Confirmación de Pedido</title>
-      </head>
-      <body style={styles.body}>
-        <table style={styles.container} cellPadding="0" cellSpacing="0">
+    <html>
+      <body style={{ margin: 0, padding: "20px", backgroundColor: "#f4f4f4" }}>
+        <table cellPadding="0" cellSpacing="0" style={styles.container}>
           <thead>
             <tr>
-              <th style={styles.header}>
+              <td style={styles.header}>
                 <h1 style={styles.headerTitle}>¡Hola, {pedido.enviar_a}!</h1>
                 <p style={styles.headerSubtitle}>
-                  Confirmación del Pedido #{pedido.folio}
+                  <strong>Confirmación de Pedido:</strong> #{pedido.folio}
                 </p>
-              </th>
+                <p style={styles.headerSubtitle}>
+                  <strong>Estatus:</strong> {pedido.estatus} | <strong>Fecha:</strong> {formatDate(pedido.createdAt)}
+                </p>
+              </td>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td style={styles.content}>
-                {/* TABLA DE DETALLES OPTIMIZADA */}
-                <table style={styles.orderDetails}>
-                  <tbody>
-                    <tr>
-                      <td style={styles.orderDetailTd}>
-                        <span style={styles.orderDetailLabel}>Pedido realizado</span>
-                      </td>
-                      <td style={{ ...styles.orderDetailTd, ...styles.orderDetailValue }}>
-                        {formatDate(pedido.createdAt)}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style={styles.orderDetailTd}>
-                        <span style={styles.orderDetailLabel}>Enviar a</span>
-                      </td>
-                      <td style={{ ...styles.orderDetailTd, ...styles.orderDetailValue }}>
-                        {pedido.enviar_a}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style={{ ...styles.orderDetailTd, borderBottom: "none" }}>
-                        <span style={styles.orderDetailLabel}>Estatus del pedido</span>
-                      </td>
-                      <td style={{ ...styles.orderDetailTd, ...styles.orderDetailValue, borderBottom: "none" }}>
-                        {pedido.estatus}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                <div style={styles.orderDetailsBox}>
+                    <p style={{ margin: "0 0 10px 0", fontWeight: "bold", borderBottom: "1px solid #cccccc", color: "#2177c2" }}>
+                        DETALLES DE ENVÍO:
+                    </p>
+                    <p style={{ margin: "3px 0" }}><strong>Entregar a:</strong> {pedido.enviar_a}</p>
+                    {/* Aquí podrías agregar más campos de dirección si el objeto pedido los incluye */}
+                </div>
 
-                <table style={styles.itemsTable}>
+                <table style={styles.itemsTable} cellPadding="0" cellSpacing="0">
                   <thead>
                     <tr>
                       <th style={styles.itemsTh}>Producto</th>
-                      <th style={{ ...styles.itemsTh, textAlign: "center" }}>
-                        Cantidad
-                      </th>
-                      <th style={{ ...styles.itemsTh, textAlign: "right" }}>
-                        Total
-                      </th>
+                      <th style={{ ...styles.itemsTh, textAlign: "center", width: "80px" }}>Cant.</th>
+                      <th style={{ ...styles.itemsTh, textAlign: "right", width: "120px" }}>Total</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -170,24 +107,18 @@ const PedidoEmail = ({ pedido }) => {
               </td>
             </tr>
             <tr>
-              <td style={styles.totalSection}>
-                <h3 style={styles.totalText}>
-                  Total del Pedido: ${parseFloat(pedido.total).toFixed(2)}
-                </h3>
-              </td>
+                <td style={styles.totalSection}>
+                    <p style={{ margin: 0, fontSize: "18px", fontWeight: "bold" }}>
+                        Total del Pedido: ${parseFloat(pedido.total).toFixed(2)}
+                    </p>
+                </td>
             </tr>
           </tbody>
           <tfoot>
             <tr>
               <td style={styles.footer}>
-                <p>
-                  Este es un correo de confirmación automático. Si tienes alguna
-                  pregunta, contáctanos en contacto@sealmarket.mx
-                </p>
-                <p>
-                  &copy; {new Date().getFullYear()} Seal Market. Todos los
-                  derechos reservados.
-                </p>
+                <p>Este es un correo automático. Si tienes dudas, escríbenos a contacto@sealmarket.mx</p>
+                <p>&copy; {new Date().getFullYear()} Seal Market. Todos los derechos reservados.</p>
               </td>
             </tr>
           </tfoot>

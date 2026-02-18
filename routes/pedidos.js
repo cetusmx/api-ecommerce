@@ -83,6 +83,7 @@ router.post('/:folio/enviar-confirmacion', async (req, res) => {
             emailCliente: primeraPartida.email, 
             enviar_a: primeraPartida.enviar_a,
             estatus: primeraPartida.estatus || 'Pendiente de envío',
+            tipo_logistica: primeraPartida.tipo_logistica,
             
             // 🚨 NUEVO CAMPO AGREGADO
             //nombreTitular: nombreTitular, 
