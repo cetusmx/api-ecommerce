@@ -2,11 +2,11 @@ const React = require('react');
 const PedidoEmailItem = require('./PedidoEmailItem');
 
 const PedidoEmail = ({ pedido }) => {
-  // Extraer el primer nombre para el saludo
   const primerNombre = pedido.enviar_a ? pedido.enviar_a.split(' ')[0] : 'Cliente';
-  
-  // Extraer el objeto domicilio según tu instrucción
   const domicilio = pedido.domicilio || {};
+  
+  // Lógica para la referencia (últimos 8 dígitos)
+  const referenciaPago = pedido.folio ? pedido.folio.toString().slice(-8) : '';
 
   const formatDate = (dateString) => {
     const options = { day: "numeric", month: "long", year: "numeric" };
@@ -38,6 +38,25 @@ const PedidoEmail = ({ pedido }) => {
       backgroundColor: "#f9f9f9",
       marginBottom: "20px",
       fontSize: "14px"
+    },
+    // Estilo para el cuadro de transferencia
+    bankInfoBox: {
+      border: "1px solid #d4edda",
+      padding: "15px",
+      backgroundColor: "#f8fff9",
+      marginBottom: "20px",
+      fontSize: "14px",
+      color: "#155724"
+    },
+    referenceHighlight: {
+      display: "inline-block",
+      backgroundColor: "#e2e3e5",
+      padding: "5px 10px",
+      borderRadius: "4px",
+      fontWeight: "bold",
+      fontSize: "16px",
+      color: "#383d41",
+      marginTop: "5px"
     },
     itemsTable: {
         width: "100%",
@@ -88,11 +107,12 @@ const PedidoEmail = ({ pedido }) => {
           <tbody>
             <tr>
               <td style={styles.content}>
+                
+                {/* 1. DETALLES DE ENVÍO */}
                 <div style={styles.orderDetailsBox}>
                     <p style={{ margin: "0 0 10px 0", fontWeight: "bold", borderBottom: "1px solid #cccccc", color: "#2177c2" }}>
                         DETALLES DE ENVÍO:
                     </p>
-                    {/* Sección de Domicilio similar a SurtidoEmail */}
                     <p style={{ margin: "3px 0" }}><strong>Entregar a:</strong> {pedido.enviar_a}</p>
                     <p style={{ margin: "3px 0" }}>
                         {domicilio.calle} #{domicilio.numero_ext}{domicilio.numero_int ? `, Int. ${domicilio.numero_int}` : ''}
@@ -100,12 +120,37 @@ const PedidoEmail = ({ pedido }) => {
                     <p style={{ margin: "3px 0" }}>Col. {domicilio.colonia}, C.P. {domicilio.codigo_postal}</p>
                     <p style={{ margin: "3px 0" }}>{domicilio.ciudad}, {domicilio.estado}</p>
                     
-                    {/* Forma de pago extraída de tipo_logistica */}
                     <p style={{ margin: "10px 0 0 0", paddingTop: "10px", borderTop: "1px dashed #cccccc" }}>
-                        <strong>Forma de pago:</strong> {pedido.tipo_logistica}
+                        <strong>Forma de pago:</strong> {pedido.tipo_logistica === 'pagoTransf' ? 'Transferencia Bancaria' : pedido.tipo_logistica}
                     </p>
                 </div>
 
+                {/* 2. DATOS BANCARIOS (CONDICIONAL) */}
+                {pedido.tipo_logistica === 'pagoTransf' && (
+                  <div style={styles.bankInfoBox}>
+                    <p style={{ margin: "0 0 10px 0", fontWeight: "bold", borderBottom: "1px solid #c3e6cb", color: "#155724" }}>
+                        DATOS PARA LA TRANSFERENCIA:
+                    </p>
+                    <p style={{ margin: "0 0 10px 0", fontSize: "13px" }}>Realiza tu pago directamente en nuestra cuenta bancaria:</p>
+                    
+                    <table cellPadding="0" cellSpacing="0" style={{ fontSize: "13px", width: "100%" }}>
+                      <tr><td style={{ padding: "2px 0" }}><strong>Banco:</strong> BBVA Bancomer</td></tr>
+                      <tr><td style={{ padding: "2px 0" }}><strong>Titular:</strong> Alberto Rodríguez Salas</td></tr>
+                      <tr><td style={{ padding: "2px 0" }}><strong>Sucursal:</strong> 0311</td></tr>
+                      <tr><td style={{ padding: "2px 0" }}><strong>CLABE:</strong> 012933004798737322</td></tr>
+                      <tr><td style={{ padding: "2px 0" }}><strong>No. de Cuenta:</strong> 0479873732</td></tr>
+                    </table>
+
+                    <p style={{ margin: "15px 0 5px 0" }}><strong>Referencia de Pago:</strong></p>
+                    <div style={styles.referenceHighlight}>{referenciaPago}</div>
+
+                    <p style={{ margin: "15px 0 0 0", fontSize: "12px" }}>
+                      Envíe su comprobante a: <a href="mailto:pagos@sealmarket.mx" style={{ fontWeight: "bold", color: "#155724" }}>pagos@sealmarket.mx</a>
+                    </p>
+                  </div>
+                )}
+
+                {/* 3. TABLA DE PRODUCTOS */}
                 <table style={styles.itemsTable} cellPadding="0" cellSpacing="0">
                   <thead>
                     <tr>
