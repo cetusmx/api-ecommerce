@@ -24,6 +24,12 @@ const PedidoEmail = ({ pedido }) => {
       borderCollapse: "collapse" // Importante para evitar micro-espacios
     },
     // Estilo unificado para la celda del encabezado
+    headerContainer1: {
+      backgroundColor: "#2177c2",
+      color: "#ffffff",
+      padding: "10px 10px",
+      textAlign: "right",
+    },
     headerContainer: {
       backgroundColor: "#2177c2",
       color: "#ffffff",
@@ -31,6 +37,8 @@ const PedidoEmail = ({ pedido }) => {
       textAlign: "left",
     },
     headerTitle: { margin: 0, fontSize: "24px", color: "#ffffff" },
+    headerSubtitle2: { margin: "5px 0 0 0", fontSize: "14px", opacity: 0.9, color: "black" },
+    headerSubtitle1: { margin: "10px 0 0 0", fontSize: "16px", opacity: 0.9, color: "black" },
     headerSubtitle: { margin: "5px 0 0 0", fontSize: "14px", opacity: 0.9, color: "#ffffff" },
     content: { padding: "20px" },
     // ... (los demás estilos se mantienen igual)
@@ -38,6 +46,13 @@ const PedidoEmail = ({ pedido }) => {
       border: "1px solid #dddddd",
       padding: "15px",
       backgroundColor: "#f9f9f9",
+      marginBottom: "20px",
+      fontSize: "14px"
+    },
+    orderDetailsBox1: {
+      /* border: "1px solid #dddddd", */
+      padding: "15px",
+      /* backgroundColor: "#f9f9f9", */
       marginBottom: "20px",
       fontSize: "14px"
     },
@@ -77,6 +92,37 @@ const PedidoEmail = ({ pedido }) => {
           <thead>
             <tr>
               {/* SOLUCIÓN: Una sola celda que contiene todo el diseño del header */}
+              <td colSpan="2" style={styles.headerContainer1}>
+                <table width="100%" cellPadding="0" cellSpacing="0" border="0">
+                  <tr>
+                    <td style={{ textAlign: "left", verticalAlign: "middle", width: "50px" }}>
+                      <img
+                        src={logoUrl}
+                        alt="Seal Market"
+                        width="50"
+                        style={{
+                          display: "block",
+                          marginLeft: "auto",
+                          border: "0",
+                          width: "50px",
+                          height: "auto"
+                        }}
+                      />
+                    </td>
+                    <td style={{ textAlign: "right", verticalAlign: "middle" }}>
+                      <p style={styles.headerSubtitle1}>
+                        <strong>Confirmación de Pedido</strong> #{pedido.folio}
+                      </p>
+                      <p style={styles.headerSubtitle2}>
+                        Pedido #{pedido.estatus}
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              {/* SOLUCIÓN: Una sola celda que contiene todo el diseño del header */}
               <td colSpan="2" style={styles.headerContainer}>
                 <table width="100%" cellPadding="0" cellSpacing="0" border="0">
                   <tr>
@@ -111,7 +157,18 @@ const PedidoEmail = ({ pedido }) => {
           <tbody>
             <tr>
               <td style={styles.content} colSpan="2">
-                {/* 1. DETALLES DE ENVÍO */}
+                {/* 1. SALUDO E INFORMACION */}
+                <div style={styles.orderDetailsBox1}>
+                  <p style={{ margin: "10px 0 10px 0", fontWeight: "400", color: "#d9534f" }}>
+                    Hola, {primerNombre}
+                  </p>
+                  <p style={{ margin: "3px 0" }}>
+                    Gracias por tu pedido. Tu solicitud será revisada contra disponibilidad de inventario, de ser confirmada recibirás un correo electrónico con más detalles. 
+                    Los detalles de tu pedido se indican a continuación.
+                  </p>
+                </div>
+
+                {/* 2. DETALLES DE ENVÍO */}
                 <div style={styles.orderDetailsBox}>
                   <p style={{ margin: "0 0 10px 0", fontWeight: "bold", borderBottom: "1px solid #cccccc", color: "#2177c2" }}>
                     DETALLES DE ENVÍO:
@@ -128,7 +185,7 @@ const PedidoEmail = ({ pedido }) => {
                   </p>
                 </div>
 
-                {/* 2. DATOS BANCARIOS */}
+                {/* 3. DATOS BANCARIOS */}
                 {pedido.tipo_logistica === 'pagoTransf' && (
                   <div style={styles.bankInfoBox}>
                     <p style={{ margin: "0 0 10px 0", borderBottom: "1px solid #c3e6cb", paddingBottom: "5px" }}>
@@ -149,12 +206,12 @@ const PedidoEmail = ({ pedido }) => {
                       {referenciaPago}
                     </div>
                     <p style={{ margin: "15px 0 0 0", fontSize: "12px" }}>
-                      Envíe su comprobante a: <a href="mailto:pagos@sealmarket.mx" style={{ fontWeight: "bold", color: "#155724" }}>pagos@sealmarket.mx</a>
+                      Envíe su comprobante a: <a href="mailto:pagos@sealmarket.mx" style={{ fontWeight: "bold", color: "#155724", textDecoration: "none" }}>pagos@sealmarket.mx</a>
                     </p>
                   </div>
                 )}
 
-                {/* 3. TABLA DE PRODUCTOS */}
+                {/* 4. TABLA DE PRODUCTOS */}
                 <table style={styles.itemsTable} cellPadding="0" cellSpacing="0">
                   <thead>
                     <tr>
