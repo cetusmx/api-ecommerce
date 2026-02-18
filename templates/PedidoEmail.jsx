@@ -2,6 +2,12 @@ const React = require('react');
 const PedidoEmailItem = require('./PedidoEmailItem');
 
 const PedidoEmail = ({ pedido }) => {
+  // Extraer el primer nombre para el saludo
+  const primerNombre = pedido.enviar_a ? pedido.enviar_a.split(' ')[0] : 'Cliente';
+  
+  // Extraer el objeto domicilio según tu instrucción
+  const domicilio = pedido.domicilio || {};
+
   const formatDate = (dateString) => {
     const options = { day: "numeric", month: "long", year: "numeric" };
     return new Date(dateString).toLocaleDateString("es-ES", options);
@@ -63,13 +69,13 @@ const PedidoEmail = ({ pedido }) => {
   };
 
   return (
-    <html>
+    <html lang="es">
       <body style={{ margin: 0, padding: "20px", backgroundColor: "#f4f4f4" }}>
         <table cellPadding="0" cellSpacing="0" style={styles.container}>
           <thead>
             <tr>
               <td style={styles.header}>
-                <h1 style={styles.headerTitle}>¡Hola, {pedido.enviar_a}!</h1>
+                <h1 style={styles.headerTitle}>¡Hola, {primerNombre}!</h1>
                 <p style={styles.headerSubtitle}>
                   <strong>Confirmación de Pedido:</strong> #{pedido.folio}
                 </p>
@@ -86,8 +92,18 @@ const PedidoEmail = ({ pedido }) => {
                     <p style={{ margin: "0 0 10px 0", fontWeight: "bold", borderBottom: "1px solid #cccccc", color: "#2177c2" }}>
                         DETALLES DE ENVÍO:
                     </p>
+                    {/* Sección de Domicilio similar a SurtidoEmail */}
                     <p style={{ margin: "3px 0" }}><strong>Entregar a:</strong> {pedido.enviar_a}</p>
-                    {/* Aquí podrías agregar más campos de dirección si el objeto pedido los incluye */}
+                    <p style={{ margin: "3px 0" }}>
+                        {domicilio.calle} #{domicilio.numero_ext}{domicilio.numero_int ? `, Int. ${domicilio.numero_int}` : ''}
+                    </p>
+                    <p style={{ margin: "3px 0" }}>Col. {domicilio.colonia}, C.P. {domicilio.codigo_postal}</p>
+                    <p style={{ margin: "3px 0" }}>{domicilio.ciudad}, {domicilio.estado}</p>
+                    
+                    {/* Forma de pago extraída de tipo_logistica */}
+                    <p style={{ margin: "10px 0 0 0", paddingTop: "10px", borderTop: "1px dashed #cccccc" }}>
+                        <strong>Forma de pago:</strong> {pedido.tipo_logistica}
+                    </p>
                 </div>
 
                 <table style={styles.itemsTable} cellPadding="0" cellSpacing="0">

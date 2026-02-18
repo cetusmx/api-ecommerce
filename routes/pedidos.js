@@ -84,6 +84,7 @@ router.post('/:folio/enviar-confirmacion', async (req, res) => {
             enviar_a: primeraPartida.enviar_a,
             estatus: primeraPartida.estatus || 'Pendiente de envío',
             tipo_logistica: primeraPartida.tipo_logistica,
+            domicilio: primeraPartida.shippingAddress,
             
             // 🚨 NUEVO CAMPO AGREGADO
             //nombreTitular: nombreTitular, 
