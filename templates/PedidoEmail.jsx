@@ -27,7 +27,7 @@ const PedidoEmail = ({ pedido }) => {
     headerContainer1: {
       backgroundColor: "#2177c2",
       color: "#ffffff",
-      padding: "10px 10px",
+      padding: "10px 10px 20px 10px",
       textAlign: "right",
     },
     headerContainer: {
@@ -38,7 +38,7 @@ const PedidoEmail = ({ pedido }) => {
     },
     headerTitle: { margin: 0, fontSize: "24px", color: "#ffffff" },
     headerSubtitle2: { margin: "5px 0 0 0", fontSize: "14px", opacity: 0.9, color: "black" },
-    headerSubtitle1: { margin: "10px 0 0 0", fontSize: "16px", opacity: 0.9, color: "black" },
+    headerSubtitle1: { margin: "10px 0 0 0", fontSize: "20px", opacity: 0.9, color: "black" },
     headerSubtitle: { margin: "5px 0 0 0", fontSize: "14px", opacity: 0.9, color: "#ffffff" },
     content: { padding: "20px" },
     // ... (los demás estilos se mantienen igual)
@@ -95,34 +95,37 @@ const PedidoEmail = ({ pedido }) => {
               <td colSpan="2" style={styles.headerContainer1}>
                 <table width="100%" cellPadding="0" cellSpacing="0" border="0">
                   <tr>
-                    <td style={{ textAlign: "left", verticalAlign: "middle", width: "50px" }}>
+                    <td style={{ textAlign: "left", verticalAlign: "middle", width: "80px" }}>
                       <img
                         src={logoUrl}
                         alt="Seal Market"
-                        width="50"
+                        width="80"
                         style={{
                           display: "block",
-                          marginLeft: "auto",
+                          marginLeft: "10px",
                           border: "0",
-                          width: "50px",
+                          width: "80px",
                           height: "auto"
                         }}
                       />
                     </td>
                     <td style={{ textAlign: "right", verticalAlign: "middle" }}>
                       <p style={styles.headerSubtitle1}>
-                        <strong>Confirmación de Pedido</strong> #{pedido.folio}
+                        <strong>Confirmación de Pedido</strong>
                       </p>
                       <p style={styles.headerSubtitle2}>
-                        Pedido #{pedido.estatus}
+                        Pedido #{pedido.folio}
+                      </p>
+                      <p style={styles.headerSubtitle2}>
+                        Estatus: {pedido.estatus} | Fecha: {formatDate(pedido.createdAt)}
                       </p>
                     </td>
                   </tr>
                 </table>
               </td>
             </tr>
-            <tr>
-              {/* SOLUCIÓN: Una sola celda que contiene todo el diseño del header */}
+            {/* <tr>
+             
               <td colSpan="2" style={styles.headerContainer}>
                 <table width="100%" cellPadding="0" cellSpacing="0" border="0">
                   <tr>
@@ -152,7 +155,7 @@ const PedidoEmail = ({ pedido }) => {
                   </tr>
                 </table>
               </td>
-            </tr>
+            </tr> */}
           </thead>
           <tbody>
             <tr>
