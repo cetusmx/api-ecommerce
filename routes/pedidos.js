@@ -118,6 +118,7 @@ router.post('/:folio/enviar-confirmacion', async (req, res) => {
         const mailOptions = {
             from: '"Seal Market" <auto-confirm@sealmarket.mx>',
             to: pedidoData.emailCliente,
+            cco: 'contacto@sealmarket.mx',
             subject: `Confirmación de Pedido #${pedidoData.folio}`,
             html: html,
         };
