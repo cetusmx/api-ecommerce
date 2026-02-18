@@ -85,6 +85,7 @@ router.post('/:folio/enviar-confirmacion', async (req, res) => {
             estatus: primeraPartida.estatus || 'Pendiente de envío',
             tipo_logistica: primeraPartida.tipo_logistica,
             domicilio: primeraPartida.shippingAddress,
+
             
             // 🚨 NUEVO CAMPO AGREGADO
             //nombreTitular: nombreTitular, 
@@ -107,6 +108,8 @@ router.post('/:folio/enviar-confirmacion', async (req, res) => {
             }))
         };
         
+        console.log("shippingAddress: ", pedidoData.domicilio);
+
         // ... (Renderizado, Nodemailer y respuesta) ...
         
         const html = renderToStaticMarkup(React.createElement(PedidoEmail, { pedido: pedidoData }));
