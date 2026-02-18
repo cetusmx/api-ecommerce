@@ -37,7 +37,7 @@ const PedidoEmail = ({ pedido }) => {
       textAlign: "left",
     },
     headerTitle: { margin: 0, fontSize: "24px", color: "#ffffff" },
-    headerSubtitle2: { margin: "3px 0 0 0", fontSize: "15px", opacity: 0.9, color: "#ffffff" },
+    headerSubtitle2: { margin: "3px 0 0 0", fontSize: "14px", opacity: 0.9, color: "#ffffff" },
     headerSubtitle1: { margin: "10px 0 0 0", fontSize: "24px", opacity: 0.9, color: "#ffffff", fontWeight: "400" },
     headerSubtitle: { margin: "5px 0 0 0", fontSize: "14px", opacity: 0.9, color: "#ffffff" },
     content: { padding: "20px" },
