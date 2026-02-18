@@ -148,6 +148,9 @@ const PedidoEmail = ({ pedido }) => {
                     <div style={{ backgroundColor: "#e2e3e5", padding: "5px 10px", borderRadius: "4px", fontWeight: "bold", fontSize: "16px", color: "#383d41", display: "inline-block" }}>
                       {referenciaPago}
                     </div>
+                    <p style={{ margin: "15px 0 0 0", fontSize: "12px" }}>
+                      Envíe su comprobante a: <a href="mailto:pagos@sealmarket.mx" style={{ fontWeight: "bold", color: "#155724" }}>pagos@sealmarket.mx</a>
+                    </p>
                   </div>
                 )}
 
