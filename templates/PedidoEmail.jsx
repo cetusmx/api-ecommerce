@@ -113,7 +113,7 @@ const PedidoEmail = ({ pedido }) => {
                   <p style={{ margin: "0 0 10px 0", fontWeight: "bold", borderBottom: "1px solid #cccccc", color: "#2177c2" }}>
                     DETALLES DE ENVÍO:
                   </p>
-                  <p style={{ margin: "3px 0" }}><strong>Entregar a:</strong> {pedido.enviar_a}</p>
+                  <p style={{ margin: "3px 0" }}><strong>{pedido.enviar_a}</strong> </p>
                   <p style={{ margin: "3px 0" }}>
                     {domicilio.calle} #{domicilio.numero_ext}{domicilio.numero_int ? `, Int. ${domicilio.numero_int}` : ''}
                   </p>

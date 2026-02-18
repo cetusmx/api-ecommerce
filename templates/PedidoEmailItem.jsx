@@ -85,11 +85,11 @@ const PedidoEmailItem = ({ item }) => {
               </a>
               <p style={styles.clave}>CLAVE: {item.clave}</p>
               
-              {item.fecha_entrega && item.fecha_entrega !== 'N/A' && (
+              {/* {item.fecha_entrega && item.fecha_entrega !== 'N/A' && (
                 <p style={styles.deliveryDate}>
                   Entrega: {formatDate(item.fecha_entrega)}
                 </p>
-              )}
+              )} */}
             </td>
           </tr>
         </table>
