@@ -106,7 +106,8 @@ router.post('/:folio/enviar-confirmacion', async (req, res) => {
                 total_partida: item.total_partida,
                 linea: item.linea || 'SIN_LINEA',
                 perfil: item.perfil || 'SIN PERFIL',
-                fecha_entrega: item.fecha_entrega || 'N/A' 
+                fecha_entrega: item.fecha_entrega || 'N/A',
+                categoria: item.categoria,
             }))
         };
 
