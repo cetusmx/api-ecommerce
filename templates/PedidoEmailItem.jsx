@@ -11,6 +11,8 @@ const PedidoEmailItem = ({ item }) => {
     ? sugeridosUrl
     : perfilesUrl;
 
+    console.log("imageUrl: ",imageUrl);
+
   const formatDate = (dateString) => {
     if (!dateString || dateString === 'N/A') return 'Fecha no disponible';
     
