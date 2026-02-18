@@ -104,8 +104,7 @@ const PedidoEmail = ({ pedido }) => {
                   <strong>Estatus:</strong> {pedido.estatus} | <strong>Fecha:</strong> {formatDate(pedido.createdAt)}
                 </p>
               </td>
-            </tr>
-            <td style={{ textAlign: "right", verticalAlign: "middle", width: "150px" }}>
+              <td style={{ textAlign: "right", verticalAlign: "middle", width: "150px" }}>
               {/* LOGO CON ATRIBUTOS EXPLÍCITOS PARA OUTLOOK */}
               <img
                 src={logoUrl}
@@ -120,6 +119,8 @@ const PedidoEmail = ({ pedido }) => {
                 }}
               />
             </td>
+            </tr>
+            
           </thead>
           <tbody>
             <tr>
