@@ -5,9 +5,7 @@ const PedidoEmail = ({ pedido }) => {
   const primerNombre = pedido.enviar_a ? pedido.enviar_a.split(' ')[0] : 'Cliente';
   const domicilio = pedido.domicilio || {};
 
-  // Lógica para la referencia (últimos 8 dígitos)
   const referenciaPago = pedido.folio ? pedido.folio.toString().substring(0, 8) : '';
-
   const logoUrl = "https://www.sealmarket.net/Sugeridos/logo.png";
 
   const formatDate = (dateString) => {
@@ -41,7 +39,6 @@ const PedidoEmail = ({ pedido }) => {
       marginBottom: "20px",
       fontSize: "14px"
     },
-    // Estilo para el cuadro de transferencia
     bankInfoBox: {
       border: "1px solid #d4edda",
       padding: "15px",
@@ -95,6 +92,7 @@ const PedidoEmail = ({ pedido }) => {
         <table cellPadding="0" cellSpacing="0" style={styles.container}>
           <thead>
             <tr>
+              {/* Celda 1: Información */}
               <td style={styles.header}>
                 <h1 style={styles.headerTitle}>¡Hola, {primerNombre}!</h1>
                 <p style={styles.headerSubtitle}>
@@ -104,28 +102,28 @@ const PedidoEmail = ({ pedido }) => {
                   <strong>Estatus:</strong> {pedido.estatus} | <strong>Fecha:</strong> {formatDate(pedido.createdAt)}
                 </p>
               </td>
-              <td style={{ textAlign: "center", verticalAlign: "middle", width: "150px", background:  "#2177c2" }}>
-              {/* LOGO CON ATRIBUTOS EXPLÍCITOS PARA OUTLOOK */}
-              <img
-                src={logoUrl}
-                alt="Seal Market"
-                width="90"
-                style={{
-                  display: "block",
-                  marginLeft: "auto",
-                  border: "0",
-                  width: "90px",
-                  height: "auto"
-                }}
-              />
-            </td>
+              {/* Celda 2: Logo */}
+              <td style={{ textAlign: "right", verticalAlign: "middle", width: "150px", background: "#2177c2", paddingRight: "20px" }}>
+                <img
+                  src={logoUrl}
+                  alt="Seal Market"
+                  width="90"
+                  style={{
+                    display: "block",
+                    marginLeft: "auto",
+                    border: "0",
+                    width: "90px",
+                    height: "auto"
+                  }}
+                />
+              </td>
             </tr>
-            
           </thead>
           <tbody>
             <tr>
-              <td style={styles.content}>
-
+              {/* SE AGREGA colSpan="2" PARA OCUPAR TODO EL ANCHO */}
+              <td style={styles.content} colSpan="2">
+                
                 {/* 1. DETALLES DE ENVÍO */}
                 <div style={styles.orderDetailsBox}>
                   <p style={{ margin: "0 0 10px 0", fontWeight: "bold", borderBottom: "1px solid #cccccc", color: "#2177c2" }}>
@@ -144,10 +142,8 @@ const PedidoEmail = ({ pedido }) => {
                 </div>
 
                 {/* 2. DATOS BANCARIOS (CONDICIONAL) */}
-                {/* 2. DATOS BANCARIOS (CONDICIONAL) */}
                 {pedido.tipo_logistica === 'pagoTransf' && (
                   <div style={styles.bankInfoBox}>
-                    {/* Título con mensaje de advertencia en el mismo renglón */}
                     <p style={{ margin: "0 0 10px 0", borderBottom: "1px solid #c3e6cb", paddingBottom: "5px" }}>
                       <span style={{ fontWeight: "bold", color: "#155724", fontSize: "14px" }}>
                         DATOS PARA LA TRANSFERENCIA:
@@ -157,22 +153,14 @@ const PedidoEmail = ({ pedido }) => {
                       </span>
                     </p>
 
-                    <p style={{ margin: "0 0 10px 0", fontSize: "13px" }}>Realiza tu pago directamente en nuestra cuenta bancaria:</p>
-
                     <table cellPadding="0" cellSpacing="0" style={{ fontSize: "13px", width: "100%" }}>
                       <tr><td style={{ padding: "2px 0" }}><strong>Banco:</strong> BBVA Bancomer</td></tr>
                       <tr><td style={{ padding: "2px 0" }}><strong>Titular:</strong> Alberto Rodríguez Salas</td></tr>
-                      <tr><td style={{ padding: "2px 0" }}><strong>Sucursal:</strong> 0311</td></tr>
                       <tr><td style={{ padding: "2px 0" }}><strong>CLABE:</strong> 012933004798737322</td></tr>
-                      <tr><td style={{ padding: "2px 0" }}><strong>No. de Cuenta:</strong> 0479873732</td></tr>
                     </table>
 
                     <p style={{ margin: "15px 0 5px 0" }}><strong>Referencia de Pago:</strong></p>
                     <div style={styles.referenceHighlight}>{referenciaPago}</div>
-
-                    <p style={{ margin: "15px 0 0 0", fontSize: "12px" }}>
-                      Envíe su comprobante a: <a href="mailto:pagos@sealmarket.mx" style={{ fontWeight: "bold", color: "#155724" }}>pagos@sealmarket.mx</a>
-                    </p>
                   </div>
                 )}
 
@@ -194,7 +182,8 @@ const PedidoEmail = ({ pedido }) => {
               </td>
             </tr>
             <tr>
-              <td style={styles.totalSection}>
+              {/* SE AGREGA colSpan="2" AQUÍ TAMBIÉN */}
+              <td style={styles.totalSection} colSpan="2">
                 <p style={{ margin: 0, fontSize: "18px", fontWeight: "bold" }}>
                   Total del Pedido: ${parseFloat(pedido.total).toFixed(2)}
                 </p>
@@ -203,7 +192,8 @@ const PedidoEmail = ({ pedido }) => {
           </tbody>
           <tfoot>
             <tr>
-              <td style={styles.footer}>
+              {/* SE AGREGA colSpan="2" PARA EL FOOTER */}
+              <td style={styles.footer} colSpan="2">
                 <p>Este es un correo automático. Si tienes dudas, escríbenos a contacto@sealmarket.mx</p>
                 <p>&copy; {new Date().getFullYear()} Seal Market. Todos los derechos reservados.</p>
               </td>
