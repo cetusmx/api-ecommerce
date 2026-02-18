@@ -37,8 +37,8 @@ const PedidoEmail = ({ pedido }) => {
       textAlign: "left",
     },
     headerTitle: { margin: 0, fontSize: "24px", color: "#ffffff" },
-    headerSubtitle2: { margin: "3px 0 0 0", fontSize: "14px", opacity: 0.9, color: "#ffffff" },
-    headerSubtitle1: { margin: "10px 0 0 0", fontSize: "24px", opacity: 0.9, color: "#ffffff", fontWeight: "400" },
+    headerSubtitle2: { margin: "0 0 0 0", fontSize: "14px", opacity: 0.9, color: "#ffffff" },
+    headerSubtitle1: { margin: "10px 0 0 0", fontSize: "24px", opacity: 0.9, color: "#ffffff", fontWeight: "400", paddingBottom:"10px 0 0 0" },
     headerSubtitle: { margin: "5px 0 0 0", fontSize: "14px", opacity: 0.9, color: "#ffffff" },
     content: { padding: "20px" },
     // ... (los demás estilos se mantienen igual)
@@ -95,7 +95,7 @@ const PedidoEmail = ({ pedido }) => {
               <td colSpan="2" style={styles.headerContainer1}>
                 <table width="100%" cellPadding="0" cellSpacing="0" border="0">
                   <tr>
-                    <td style={{ textAlign: "left", verticalAlign: "middle", width: "80px", marginLeft: "20px" }}>
+                    <td style={{ textAlign: "left", verticalAlign: "middle", width: "80px", marginLeft: "15px" }}>
                       <img
                         src={logoUrl}
                         alt="Seal Market"
@@ -167,7 +167,7 @@ const PedidoEmail = ({ pedido }) => {
                         &nbsp;&nbsp;(Tu pedido comenzará a procesarse una vez confirmado el pago)
                       </span>
                     </p>
-                    <table cellPadding="0" cellSpacing="0" style={{ fontSize: "13px", width: "100%" }}>
+                    <table cellPadding="0" cellSpacing="0" style={{ fontSize: "14px", width: "100%" }}>
                       <tr><td style={{ padding: "2px 0" }}><strong>Banco:</strong> BBVA Bancomer</td></tr>
                       <tr><td style={{ padding: "2px 0" }}><strong>Titular:</strong> Alberto Rodríguez Salas</td></tr>
                       <tr><td style={{ padding: "2px 0" }}><strong>CLABE:</strong> 012933004798737322</td></tr>
@@ -176,7 +176,7 @@ const PedidoEmail = ({ pedido }) => {
                     <div style={{ backgroundColor: "#e2e3e5", padding: "5px 10px", borderRadius: "4px", fontWeight: "bold", fontSize: "16px", color: "#383d41", display: "inline-block" }}>
                       {referenciaPago}
                     </div>
-                    <p style={{ margin: "15px 0 0 0", fontSize: "12px" }}>
+                    <p style={{ margin: "15px 0 0 0", fontSize: "13px" }}>
                       Envíe su comprobante a: <a href="mailto:pagos@sealmarket.mx" style={{ fontWeight: "bold", color: "#155724", textDecoration: "none" }}>pagos@sealmarket.mx</a>
                     </p>
                   </div>
@@ -186,9 +186,9 @@ const PedidoEmail = ({ pedido }) => {
                 <table style={styles.itemsTable} cellPadding="0" cellSpacing="0">
                   <thead>
                     <tr>
-                      <th style={{ borderBottom: "2px solid #333333", padding: "10px 5px", textAlign: "left", fontSize: "13px", color: "#333333", backgroundColor: "#eeeeee" }}>Producto</th>
-                      <th style={{ borderBottom: "2px solid #333333", padding: "10px 5px", textAlign: "center", width: "80px", color: "#333333", backgroundColor: "#eeeeee" }}>Cant.</th>
-                      <th style={{ borderBottom: "2px solid #333333", padding: "10px 5px", textAlign: "right", width: "120px", color: "#333333", backgroundColor: "#eeeeee" }}>Total</th>
+                      <th style={{ borderBottom: "2px solid #333333", padding: "10px 5px", textAlign: "left", fontSize: "13px", color: "#333333", backgroundColor: "#eeeeee" }}>Producto / Descripción</th>
+                      <th style={{ borderBottom: "2px solid #333333", padding: "10px 5px", textAlign: "center", fontSize: "13px", width: "80px", color: "#333333", backgroundColor: "#eeeeee" }}>Cant.</th>
+                      <th style={{ borderBottom: "2px solid #333333", padding: "10px 5px", textAlign: "right", fontSize: "13px", width: "120px", color: "#333333", backgroundColor: "#eeeeee" }}>Total</th>
                     </tr>
                   </thead>
                   <tbody>
