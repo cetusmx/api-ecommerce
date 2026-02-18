@@ -104,17 +104,17 @@ const PedidoEmail = ({ pedido }) => {
                   <strong>Estatus:</strong> {pedido.estatus} | <strong>Fecha:</strong> {formatDate(pedido.createdAt)}
                 </p>
               </td>
-              <td style={{ textAlign: "right", verticalAlign: "middle", width: "150px" }}>
+              <td style={{ textAlign: "center", verticalAlign: "middle", width: "150px", background:  "#2177c2" }}>
               {/* LOGO CON ATRIBUTOS EXPLÍCITOS PARA OUTLOOK */}
               <img
                 src={logoUrl}
                 alt="Seal Market"
-                width="120"
+                width="90"
                 style={{
                   display: "block",
                   marginLeft: "auto",
                   border: "0",
-                  width: "120px",
+                  width: "90px",
                   height: "auto"
                 }}
               />
