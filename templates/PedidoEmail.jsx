@@ -5,7 +5,7 @@ const PedidoEmail = ({ pedido }) => {
   const primerNombre = pedido.enviar_a ? pedido.enviar_a.split(' ')[0] : 'Cliente';
   const domicilio = pedido.domicilio || {};
   const referenciaPago = pedido.folio ? pedido.folio.toString().substring(0, 8) : '';
-  const logoUrl = "https://www.sealmarket.net/Sugeridos/logo.png";
+  const logoUrl = "https://www.sealmarket.net/Sugeridos/logo-white.png";
 
   const formatDate = (dateString) => {
     const options = { day: "numeric", month: "long", year: "numeric" };
@@ -25,7 +25,7 @@ const PedidoEmail = ({ pedido }) => {
     },
     // Estilo unificado para la celda del encabezado
     headerContainer: {
-      backgroundColor: "#5c98cc",
+      backgroundColor: "#2177c2",
       color: "#ffffff",
       padding: "25px 20px",
       textAlign: "left",
