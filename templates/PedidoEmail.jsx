@@ -93,12 +93,12 @@ const PedidoEmail = ({ pedido }) => {
                       <img
                         src={logoUrl}
                         alt="Seal Market"
-                        width="100"
+                        width="90"
                         style={{
                           display: "block",
                           marginLeft: "auto",
                           border: "0",
-                          width: "100px",
+                          width: "90px",
                           height: "auto"
                         }}
                       />
