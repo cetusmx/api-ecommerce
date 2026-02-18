@@ -77,6 +77,8 @@ router.post('/:folio/enviar-confirmacion', async (req, res) => {
         // 🚨 CLAVE: Llamada a la función para obtener el nombre del titular
         //const nombreTitular = await obtenerNombreTitular(primeraPartida.email);
 
+         console.log("shippingAddress 2do: ", primeraPartida.shippingAddress);
+
         // 2. Reestructurar las partidas en el objeto 'pedido' para la plantilla
         const pedidoData = {
             folio: primeraPartida.folio,
@@ -107,8 +109,6 @@ router.post('/:folio/enviar-confirmacion', async (req, res) => {
                 fecha_entrega: item.fecha_entrega || 'N/A' 
             }))
         };
-        
-        console.log("shippingAddress: ", pedidoData.domicilio);
 
         // ... (Renderizado, Nodemailer y respuesta) ...
         
