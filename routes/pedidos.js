@@ -77,7 +77,7 @@ router.post('/:folio/enviar-confirmacion', async (req, res) => {
         // 🚨 CLAVE: Llamada a la función para obtener el nombre del titular
         //const nombreTitular = await obtenerNombreTitular(primeraPartida.email);
 
-         console.log("shippingAddress 2do: ", primeraPartida.shippingAddress);
+         console.log("shippingAddress 2do: ", primeraPartida.domicilio);
 
         // 2. Reestructurar las partidas en el objeto 'pedido' para la plantilla
         const pedidoData = {
@@ -86,7 +86,7 @@ router.post('/:folio/enviar-confirmacion', async (req, res) => {
             enviar_a: primeraPartida.enviar_a,
             estatus: primeraPartida.estatus || 'Pendiente de envío',
             tipo_logistica: primeraPartida.tipo_logistica,
-            domicilio: primeraPartida.shippingAddress,
+            domicilio: primeraPartida.domicilio,
 
             
             // 🚨 NUEVO CAMPO AGREGADO
