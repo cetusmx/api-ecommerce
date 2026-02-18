@@ -6,7 +6,7 @@ const PedidoEmail = ({ pedido }) => {
   const domicilio = pedido.domicilio || {};
 
   // Lógica para la referencia (últimos 8 dígitos)
-  const referenciaPago = pedido.folio ? pedido.folio.toString().slice(-8) : '';
+  const referenciaPago = pedido.folio ? pedido.folio.toString().substring(0,8) : '';
 
   const formatDate = (dateString) => {
     const options = { day: "numeric", month: "long", year: "numeric" };
