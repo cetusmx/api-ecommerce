@@ -37,8 +37,8 @@ const PedidoEmail = ({ pedido }) => {
       textAlign: "left",
     },
     headerTitle: { margin: 0, fontSize: "24px", color: "#ffffff" },
-    headerSubtitle2: { margin: "5px 0 0 0", fontSize: "14px", opacity: 0.9, color: "black" },
-    headerSubtitle1: { margin: "10px 0 0 0", fontSize: "20px", opacity: 0.9, color: "black" },
+    headerSubtitle2: { margin: "3px 0 0 0", fontSize: "16px", opacity: 0.9, color: "#ffffff" },
+    headerSubtitle1: { margin: "10px 0 0 0", fontSize: "24px", opacity: 0.9, color: "#ffffff" },
     headerSubtitle: { margin: "5px 0 0 0", fontSize: "14px", opacity: 0.9, color: "#ffffff" },
     content: { padding: "20px" },
     // ... (los demás estilos se mantienen igual)
@@ -102,7 +102,7 @@ const PedidoEmail = ({ pedido }) => {
                         width="80"
                         style={{
                           display: "block",
-                          marginLeft: "10px",
+                          marginLeft: "20px",
                           border: "0",
                           width: "80px",
                           height: "auto"
@@ -124,38 +124,6 @@ const PedidoEmail = ({ pedido }) => {
                 </table>
               </td>
             </tr>
-            {/* <tr>
-             
-              <td colSpan="2" style={styles.headerContainer}>
-                <table width="100%" cellPadding="0" cellSpacing="0" border="0">
-                  <tr>
-                    <td style={{ verticalAlign: "middle" }}>
-                      <h1 style={styles.headerTitle}>¡Hola, {primerNombre}!</h1>
-                      <p style={styles.headerSubtitle}>
-                        <strong>Confirmación de Pedido:</strong> #{pedido.folio}
-                      </p>
-                      <p style={styles.headerSubtitle}>
-                        <strong>Estatus:</strong> {pedido.estatus} | <strong>Fecha:</strong> {formatDate(pedido.createdAt)}
-                      </p>
-                    </td>
-                    <td style={{ textAlign: "right", verticalAlign: "middle", width: "120px" }}>
-                      <img
-                        src={logoUrl}
-                        alt="Seal Market"
-                        width="90"
-                        style={{
-                          display: "block",
-                          marginLeft: "auto",
-                          border: "0",
-                          width: "90px",
-                          height: "auto"
-                        }}
-                      />
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr> */}
           </thead>
           <tbody>
             <tr>
@@ -196,7 +164,7 @@ const PedidoEmail = ({ pedido }) => {
                         DATOS PARA LA TRANSFERENCIA:
                       </span>
                       <span style={{ color: "#d9534f", fontSize: "12px", marginLeft: "10px", fontStyle: "italic" }}>
-                        &nbsp;&nbsp;(Su pedido comenzará a procesarse una vez confirmado el pago)
+                        &nbsp;&nbsp;(Tu pedido comenzará a procesarse una vez confirmado el pago)
                       </span>
                     </p>
                     <table cellPadding="0" cellSpacing="0" style={{ fontSize: "13px", width: "100%" }}>
