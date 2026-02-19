@@ -110,16 +110,16 @@ const SurtidoEmail = ({ envio }) => {
                     </p>
 
                     {/* SECCIÓN MEJORADA: TABLA DE DOS COLUMNAS PARA REFERENCIA Y MONTO */}
-                    <table cellPadding="0" cellSpacing="0" border="0" style={{ width: "100%", marginTop: "15px", borderTop: "1px dashed #c3e6cb", paddingTop: "15px" }}>
+                    <table cellPadding="0" cellSpacing="0" border="0" style={{ width: "50%", marginTop: "15px", borderTop: "1px dashed #c3e6cb", paddingTop: "15px" }}>
                       <tr>
-                        <td style={{ verticalAlign: "top", width: "50%" }}>
-                          <p style={{ margin: "0 0 5px 0", fontSize: "13px" }}><strong>Referencia de Pago:</strong></p>
+                        <td style={{ verticalAlign: "top", width: "50%", textAlign: "left" }}>
+                          <p style={{ margin: "0 0 5px 0", fontSize: "13px" }}><strong>Referencia de Pago</strong></p>
                           <div style={{ backgroundColor: "#e2e3e5", padding: "5px 10px", borderRadius: "4px", fontWeight: "bold", fontSize: "16px", color: "#383d41", display: "inline-block" }}>
                             {referenciaPago}
                           </div>
                         </td>
-                        <td style={{ verticalAlign: "top", width: "50%", textAlign: "right" }}>
-                          <p style={{ margin: "0 0 5px 0", fontSize: "13px" }}><strong>Monto del pedido:</strong></p>
+                        <td style={{ verticalAlign: "top", width: "50%", textAlign: "left" }}>
+                          <p style={{ margin: "0 0 5px 0", fontSize: "13px" }}><strong>Monto del Pedido</strong></p>
                           <div style={{ backgroundColor: "#e2e3e5", padding: "5px 10px", borderRadius: "4px", fontWeight: "bold", fontSize: "16px", color: "#383d41", display: "inline-block" }}>
                             ${parseFloat(envio.total).toFixed(2)}
                           </div>
