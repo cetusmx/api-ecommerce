@@ -207,7 +207,7 @@ router.post('/surtir', async (req, res) => {
         const destinatario = ALMACEN_EMAILS[almacen];
         const items_envioo = envio.items_envio;
 
-        //console.log(envio);
+        console.log(envio.total);
 
         if (!destinatario) {
             resultados.push({
