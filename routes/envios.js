@@ -35,7 +35,7 @@ const ALMACEN_EMAILS = {
     '1': 'rortiz@sealmarket.mx',
     '5': 'mazatlan@sealmarket.mx',
     '6': 'zacatecas@sealmarket.mx',
-    '7': 'arodriguez@sealmarket.mx',
+    '7': 'orodriguez@sealmarket.mx',
 };
 
 // =======================================================
