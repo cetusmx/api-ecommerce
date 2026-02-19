@@ -203,6 +203,7 @@ router.post('/surtir', async (req, res) => {
     // Iterar sobre cada objeto de envío
     for (const envio of enviosArray) {
         const almacen = String(envio.almacen_asignado);
+        const tipo_logistica = envio.tipo_logistica;
         const destinatario = ALMACEN_EMAILS[almacen];
         const items_envioo = envio.items_envio;
         console.log(items_envioo);

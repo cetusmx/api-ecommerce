@@ -4,6 +4,9 @@ const React = require("react");
 const SurtidoEmailItem = require("./SurtidoEmailItem");
 
 const SurtidoEmail = ({ envio }) => {
+
+  const referenciaPago = envio.folio ? envio.folio.toString().substring(0, 8) : '';
+  
   const styles = {
     container: {
       maxWidth: "800px", // Aumentado ligeramente para las nuevas columnas
