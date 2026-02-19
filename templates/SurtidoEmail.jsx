@@ -149,13 +149,6 @@ const SurtidoEmail = ({ envio }) => {
                 </table>
               </td>
             </tr>
-            <tr>
-              <td style={styles.totalSection} colSpan="2">
-                <p style={{ margin: 0, fontSize: "18px", fontWeight: "bold" }}>
-                  Total del Pedido: ${parseFloat(envio.total).toFixed(2)}
-                </p>
-              </td>
-            </tr>
           </tbody>
           <tfoot>
             <tr>
