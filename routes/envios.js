@@ -193,7 +193,7 @@ router.post('/surtir', async (req, res) => {
     // Si req.body es un arreglo, lo usa. Si es un objeto, lo envuelve en un arreglo.
     const enviosArray = Array.isArray(req.body) ? req.body : [req.body];
     console.log("Pedido: ",enviosArray);
-    console.log("Items enviados: ", enviosArray.items_envio);
+    console.log("Items enviados: ", enviosArray[0].items_envio);
 
     if (enviosArray.length === 0) {
         return res.status(400).json({ error: 'El cuerpo debe ser un arreglo no vacío de envíos.' });
