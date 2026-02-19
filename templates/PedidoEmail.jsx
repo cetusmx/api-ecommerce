@@ -5,7 +5,7 @@ const PedidoEmail = ({ pedido }) => {
   const primerNombre = pedido.enviar_a ? pedido.enviar_a.split(' ')[0] : 'Cliente';
   const domicilio = pedido.domicilio || {};
   const referenciaPago = pedido.folio ? pedido.folio.toString().substring(0, 8) : '';
-  const logoUrl = "https://www.sealmarket.net/Sugeridos/logo-white.png";
+  const logoUrl = "https://www.sealmarket.net/Sugeridos/logo-white2.png";
 
   const formatDate = (dateString) => {
     const options = { day: "numeric", month: "long", year: "numeric" };
@@ -58,7 +58,7 @@ const PedidoEmail = ({ pedido }) => {
     },
     bankInfoBox: {
       border: "1px solid #d4edda",
-      padding: "15px",
+      padding: "15px 10px",
       backgroundColor: "#f8fff9",
       marginBottom: "20px",
       fontSize: "14px",

@@ -61,7 +61,7 @@ const SurtidoEmailItem = ({ item }) => {
 
       {/* FILA 2: EXISTENCIAS (Usando tablas anidadas para forzar el espaciado) */}
       <tr>
-        <td colSpan="4" style={{ padding: "5px 10px 15px 10px", backgroundColor: "#f8f9fa", borderBottom: "2px solid #dddddd" }}>
+        <td colSpan="4" style={{ padding: "15px 10px 15px 10px", backgroundColor: "#f8f9fa", borderBottom: "2px solid #dddddd" }}>
           <table cellPadding="0" cellSpacing="0" border="0">
             <tr>
               <td style={{ fontSize: "11px", fontWeight: "bold", color: "#666666", paddingRight: "10px" }}>
