@@ -61,7 +61,7 @@ router.post('/', async (req, res) => {
         items_envio
     } = data;
 
-    console.log(items_envio);
+    //console.log(items_envio);
 
     // Iniciar una transacción de Sequelize
     const t = await db.sequelize.transaction();
@@ -193,6 +193,7 @@ router.post('/surtir', async (req, res) => {
     // Si req.body es un arreglo, lo usa. Si es un objeto, lo envuelve en un arreglo.
     const enviosArray = Array.isArray(req.body) ? req.body : [req.body];
     console.log("Pedido: ",enviosArray);
+    console.log("Items enviados: ", enviosArray.items_envio);
 
     if (enviosArray.length === 0) {
         return res.status(400).json({ error: 'El cuerpo debe ser un arreglo no vacío de envíos.' });
@@ -207,7 +208,7 @@ router.post('/surtir', async (req, res) => {
         const destinatario = ALMACEN_EMAILS[almacen];
         const items_envioo = envio.items_envio;
 
-        console.log("Total recibido: ", envio.total);
+        //console.log("Total recibido: ", envio.total);
 
         if (!destinatario) {
             resultados.push({
