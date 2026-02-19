@@ -113,7 +113,7 @@ const SurtidoEmail = ({ envio }) => {
                       {referenciaPago}
                     </div>
                     <p style={{ margin: "15px 0 0 0", fontSize: "13px" }}>
-                      El comprobante se recibirá en: <a style={{ fontWeight: "bold", color: "#155724", textDecoration: "none" }}>pagos@sealmarket.mx</a>
+                      El comprobante se recibirá en: pagos@sealmarket.mx
                     </p>
                   </div>
                 )}
