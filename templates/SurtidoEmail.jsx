@@ -108,10 +108,16 @@ const SurtidoEmail = ({ envio }) => {
                         Procesar envío hasta confirmar el pago
                       </span>
                     </p>
+
                     <p style={{ margin: "15px 0 5px 0" }}><strong>Referencia de Pago:</strong></p>
                     <div style={{ backgroundColor: "#e2e3e5", padding: "5px 10px", borderRadius: "4px", fontWeight: "bold", fontSize: "16px", color: "#383d41", display: "inline-block" }}>
                       {referenciaPago}
                     </div>
+                    <p style={{ margin: "15px 0 5px 0" }}><strong>Monto del pedido:</strong></p>
+                    <div style={{ backgroundColor: "#e2e3e5", padding: "5px 10px", borderRadius: "4px", fontWeight: "bold", fontSize: "16px", color: "#383d41", display: "inline-block" }}>
+                      ${parseFloat(envio.total).toFixed(2)}
+                    </div>
+
                     <p style={{ margin: "15px 0 0 0", fontSize: "13px" }}>
                       El comprobante se recibirá en: pagos@sealmarket.mx
                     </p>

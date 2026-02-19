@@ -47,7 +47,7 @@ router.post('/', async (req, res) => {
     // Si siempre es un objeto, desestructuraríamos directamente const data = req.body.
     // Asumiremos que el cuerpo es UN OBJETO (el primer elemento del arreglo que mencionaste).
     const data = req.body;
-    console.log("Body en api/envios/ ", req.body);
+    //console.log("Body en api/envios/ ", req.body);
     // Si el cuerpo llega como [ {...} ], ajusta a const data = req.body[0];
 
     // Extraer campos de alto nivel y el domicilio de envío
@@ -209,7 +209,7 @@ router.post('/surtir', async (req, res) => {
         const items_envioo = envio.items_envio;
         const total_ped = envio.total;
 
-        console.log("Total recibido: ", total_ped);
+        //console.log("Total recibido: ", total_ped);
 
         if (!destinatario) {
             resultados.push({
