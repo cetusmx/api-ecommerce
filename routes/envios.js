@@ -192,7 +192,7 @@ router.post('/surtir', async (req, res) => {
     // 🚨 CORRECCIÓN CLAVE: Aseguramos que data sea un arreglo.
     // Si req.body es un arreglo, lo usa. Si es un objeto, lo envuelve en un arreglo.
     const enviosArray = Array.isArray(req.body) ? req.body : [req.body];
-    //console.log("Pedido: ",enviosArray);
+    console.log("Pedido: ",enviosArray);
 
     if (enviosArray.length === 0) {
         return res.status(400).json({ error: 'El cuerpo debe ser un arreglo no vacío de envíos.' });
@@ -207,7 +207,7 @@ router.post('/surtir', async (req, res) => {
         const destinatario = ALMACEN_EMAILS[almacen];
         const items_envioo = envio.items_envio;
 
-        console.log(envio);
+        //console.log(envio);
 
         if (!destinatario) {
             resultados.push({
