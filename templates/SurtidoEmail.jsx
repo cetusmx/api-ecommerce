@@ -109,14 +109,23 @@ const SurtidoEmail = ({ envio }) => {
                       </span>
                     </p>
 
-                    <p style={{ margin: "15px 0 5px 0" }}><strong>Referencia de Pago:</strong></p>
-                    <div style={{ backgroundColor: "#e2e3e5", padding: "5px 10px", borderRadius: "4px", fontWeight: "bold", fontSize: "16px", color: "#383d41", display: "inline-block" }}>
-                      {referenciaPago}
-                    </div>
-                    <p style={{ margin: "15px 0 5px 0" }}><strong>Monto del pedido:</strong></p>
-                    <div style={{ backgroundColor: "#e2e3e5", padding: "5px 10px", borderRadius: "4px", fontWeight: "bold", fontSize: "16px", color: "#383d41", display: "inline-block" }}>
-                      ${parseFloat(envio.total).toFixed(2)}
-                    </div>
+                    {/* SECCIÓN MEJORADA: TABLA DE DOS COLUMNAS PARA REFERENCIA Y MONTO */}
+                    <table cellPadding="0" cellSpacing="0" border="0" style={{ width: "100%", marginTop: "15px", borderTop: "1px dashed #c3e6cb", paddingTop: "15px" }}>
+                      <tr>
+                        <td style={{ verticalAlign: "top", width: "50%" }}>
+                          <p style={{ margin: "0 0 5px 0", fontSize: "13px" }}><strong>Referencia de Pago:</strong></p>
+                          <div style={{ backgroundColor: "#e2e3e5", padding: "5px 10px", borderRadius: "4px", fontWeight: "bold", fontSize: "16px", color: "#383d41", display: "inline-block" }}>
+                            {referenciaPago}
+                          </div>
+                        </td>
+                        <td style={{ verticalAlign: "top", width: "50%", textAlign: "right" }}>
+                          <p style={{ margin: "0 0 5px 0", fontSize: "13px" }}><strong>Monto del pedido:</strong></p>
+                          <div style={{ backgroundColor: "#e2e3e5", padding: "5px 10px", borderRadius: "4px", fontWeight: "bold", fontSize: "16px", color: "#383d41", display: "inline-block" }}>
+                            ${parseFloat(envio.total).toFixed(2)}
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
 
                     <p style={{ margin: "15px 0 0 0", fontSize: "13px" }}>
                       El comprobante se recibirá en: pagos@sealmarket.mx
